@@ -12,4 +12,11 @@ class Problem extends Model
      * @var array
      */
     protected $guarded = [];
+
+    /**
+     * Disable timestamps from table
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
 }

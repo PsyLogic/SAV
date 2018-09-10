@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Commertial extends Model
+class Commercial extends Model
 {
     /**
      * Make all fiels assignable
@@ -12,4 +12,11 @@ class Commertial extends Model
      * @var array
      */
     protected $guarded = [];
+
+    /**
+     * Disable timestamps from table
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
 }

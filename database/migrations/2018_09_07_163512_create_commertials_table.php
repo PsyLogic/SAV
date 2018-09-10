@@ -13,11 +13,10 @@ class CreateCommertialsTable extends Migration
      */
     public function up()
     {
-        Schema::table('commercials', function (Blueprint $table) {
+        Schema::create('commercials', function (Blueprint $table) {
             $table->increments('id');
             $table->string('full_name');
             $table->string('phone')->nullable();
-            $table->timestamps();
         });
     }
 

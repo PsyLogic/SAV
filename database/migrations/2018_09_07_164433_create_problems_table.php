@@ -17,7 +17,6 @@ class CreateProblemsTable extends Migration
             $table->increments('id');
             $table->string('content');
             $table->boolean('eligibility');
-            $table->timestamps();
         });
     }
 
