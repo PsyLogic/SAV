@@ -35,10 +35,9 @@
                       </tr>
                     </thead>
                     <tbody>
-                        @php $index = 1; @endphp
                         @forelse($commercials as $commercial)
                         <tr>
-                            <th scope="row">{{ $index++ }}</th>
+                            <th scope="row">{{ $loop->iteration }}</th>
                             <td>{{$commercial->full_name}}</td>
                             <td>{{$commercial->phone}}</td>
                             <td>

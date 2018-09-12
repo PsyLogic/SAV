@@ -37,12 +37,5 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    /**
-     * return username instead of email
-     *
-     * @return void
-     */
-    protected function username(){
-        return 'username';
-    }
+    
 }

@@ -15,6 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::resource('/commercials', 'CommercialController');
 Route::resource('/users', 'UserController');
 Route::put('/users/password/{id}', 'UserController@updatePassword');

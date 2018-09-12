@@ -5,10 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\QueryException;
 use App\User;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +26,7 @@ class UserController extends Controller
         if($request->ajax()){
             return response()->json(User::all());
         }
-        return view('user.index', ['users' => User::select('id','name','username')->get()]);
+        return view('user.index', ['users' => User::select('id','name','username','type')->get()]);
     }
 
     /**
@@ -30,9 +37,14 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validator($request->all());
-        $user = $this->create($request->all());
-        return response()->json($user);
+        try{
+            $validation = $this->validator($request->all());
+            $user = $this->create($request->all());
+            return response()->json($user);
+        }catch(QueryException $e){
+            if($e->errorInfo[1] == 1062)
+                return response()->json(['message'=>'Username already taken'],412);
+        }
     }
 
     /**

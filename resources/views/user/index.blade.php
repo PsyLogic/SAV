@@ -51,17 +51,18 @@
                       <tr>
                         <th scope="col">#</th>
                         <th scope="col">Full Name</th>
-                        <th scope="col">username</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Job</th>
                         <th scope="col">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                        @php $index = 1; @endphp
                         @forelse($users as $user)
                         <tr>
-                            <th scope="row">{{ $index++ }}</th>
+                            <th scope="row">{{  $loop->iteration  }}</th>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->username }}</td>
+                            <td>{{ $user->type }}</td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-danger" data-id="{{ $user->id }}" title="Supprimer"><i class="fa fa-times"></i></button>
                                 <button type="button" class="btn btn-info" data-id="{{ $user->id }}" title="Modifier"><i class="far fa-edit"></i></button>
@@ -111,6 +112,7 @@
                         <th scope="row">'+(i+1)+'</th>\
                         <td>'+user.name+'</td>\
                         <td>'+user.username+'</td>\
+                        <td>'+user.type+'</td>\
                         <td>\
                             <button type="button" class="btn btn-danger" data-id="'+user.id+'" title="Delete"><i class="fa fa-times"></i></button>\
                             <button type="button" class="btn btn-info" data-id="'+user.id+'" title="Edit"><i class="far fa-edit"></i></button>\
@@ -144,8 +146,11 @@
                     getUsers();
                 },
                 error: function(response){
+                    console.log(response);
                     var errors="";
-                    if(response.status == 422){
+                    if(response.status == 412){
+                        errors = response.responseJSON.message;
+                    }else if(response.status == 422){
                         $.each(response.responseJSON.errors, function(field,error){
                             errors +="- " + error[0] + "\n";
                         });
