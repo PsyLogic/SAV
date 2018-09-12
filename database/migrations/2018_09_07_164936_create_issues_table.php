@@ -18,6 +18,7 @@ class CreateIssuesTable extends Migration
             $table->string('imei');
             $table->json('client');
             $table->unsignedInteger('commercial_id');
+            $table->unsignedInteger('user_id');
             $table->string('diagnostic')->nullable();
             $table->unsignedInteger('problem_id');
             $table->string('extra_problem')->nullable();
@@ -30,6 +31,7 @@ class CreateIssuesTable extends Migration
 
 
             $table->foreign('commercial_id')->references('id')->on('commercials');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('problem_id')->references('id')->on('problems');
         });
     }

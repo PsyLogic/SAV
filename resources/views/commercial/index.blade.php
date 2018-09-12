@@ -34,7 +34,22 @@
                         <th scope="col">Actions</th>
                       </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                        @php $index = 1; @endphp
+                        @forelse($commercials as $commercial)
+                        <tr>
+                            <th scope="row">{{ $index++ }}</th>
+                            <td>{{$commercial->full_name}}</td>
+                            <td>{{$commercial->phone}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" data-id="{{$commercial->id}}" title="Delete"><i class="fa fa-times"></i></button>
+                                <button type="button" class="btn btn-info" data-id="{{$commercial->id}}" title="Edit"><i class="far fa-edit"></i></button>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><th scope="row" class="text-center text-danger" colspan="4">No data is Available</th></tr>
+                        @endforelse
+                    </tbody>
                   </table>
             </div>
         </div>
@@ -75,7 +90,7 @@
                         <td>'+commercial.full_name+'</td>\
                         <td>'+commercial.phone+'</td>\
                         <td>\
-                        <button type="button" class="btn btn-danger" data-id="'+commercial.id+'" title="Delete"><i class="far fa-minus-square"></i></button>\
+                        <button type="button" class="btn btn-danger" data-id="'+commercial.id+'" title="Delete"><i class="fa fa-times"></i></button>\
                         <button type="button" class="btn btn-info" data-id="'+commercial.id+'" title="Edit"><i class="far fa-edit"></i></button>\
                         </td>\
                     </tr>\
@@ -83,14 +98,11 @@
                 });
                 $('.table tbody').html(rows);
             },
-            error: function(erros){
-                errorMessages(errors);
+            error: function(response){
+                console.log(response);
             }
         });
     }
-
-    // Init Commercial table
-    getCommercials();
 
     $(document).ready(function(){
 
@@ -109,9 +121,18 @@
                     $('#add-frm-commercial :input').val('');
                     getCommercials();
                 },
-                error: function(errors){
-                    console.log(errors);
-                        swal("Error", "Error occured: \n" + (errors.responseJSON.message || 'Call IT stuff') + "\n line: " + errors.responseJSON.line, "error");
+                error: function(response){
+                    var errors="";
+                    console.log(response);
+                    if(response.status == 422){
+                        $.each(response.responseJSON.errors, function(field,error){
+                            errors +="- " + error[0] + "\n";
+                        });
+                    }else if(response.status == 500){
+                        errors = "Message: " + response.responseJSON.message
+                            + "\nFile: "  + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line ;
+
+                    }
                 }
             });
 
@@ -127,14 +148,21 @@
                 url:url_commercial + '/' + id,
                 dataType: 'json',
                 success: function (commercial) {
-                    $('#update-frm-commercial #full_name').val(commercial.full_name);
-                    $('#update-frm-commercial #phone').val(commercial.phone);
+                    $('#update-frm-commercial #update_full_name').val(commercial.full_name);
+                    $('#update-frm-commercial #update_phone').val(commercial.phone);
                     $('#update-commercial').modal('toggle');
                 },
-                error: function(errors){
-                    console.log(errors);
-                    swal("Error", "Error occured: \n" + (errors.responseJSON.message || 'Call IT stuff') + "\n line: " + errors.responseJSON.line, "error");
-                }
+                error: function(response){
+                    console.log(response);
+                    var errors="";
+                    if(response.status == 404){
+                        errors = "Commercial not found";
+                    }else if(response.status == 500){
+                        errors = "Message: " + response.responseJSON.message
+                            + "\nFile: "  + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line ;
+
+                    }
+                    swal("Error", "Error occured: \n" + errors, "error");                }
             });
         });
 
@@ -152,9 +180,19 @@
                     swal("Done", "Commercial updated successfully !", "success");
                     getCommercials();
                 },
-                error: function(errors){
-                    console.log(errors);
-                        swal("Error", "Error occured: \n" + (errors.responseJSON.message || 'Call IT stuff') + "\n line: " + errors.responseJSON.line, "error");
+                error: function(response){
+                    console.log(response);
+                    var errors="";
+                    if(response.status == 422){
+                        $.each(response.responseJSON.errors, function(field,error){
+                            errors +="- " + error[0] + "\n";
+                        });
+                    }else if(response.status == 500){
+                        errors = "Message: " + response.responseJSON.message
+                            + "\nFile: "  + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line ;
+                    }
+
+                    swal("Error", "Error occured: \n" + errors, "error");
                 }
             });
 
@@ -181,9 +219,17 @@
                             swal("Done", "Commercial deleted successfully !", "success");
                             getCommercials();
                         },
-                        error: function(errors){
-                            console.log(errors);
-                                swal("Error", "Error occured: \n" + (errors.responseJSON.message || 'Call IT stuff') + "\n line: " + errors.responseJSON.line, "error");
+                        error: function(response){
+                            console.log(response);
+                            var errors="";
+                            if(response.status == 500){
+                                errors = "Message: " + response.responseJSON.message
+                                    + "\nFile: "  + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line ;
+
+                            }else if(response.status == 404){
+                                errors = "Commercial Not Found";
+                            }
+                                swal("Error", errors, "error");
                         }
                     });
                 }

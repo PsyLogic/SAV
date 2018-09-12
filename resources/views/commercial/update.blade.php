@@ -12,11 +12,11 @@
                 
                     <div class="form-group">
                         <label for="full_name">Full Name</label>
-                        <input type="text" class="form-control" id="full_name" name="full_name" required> 
+                        <input type="text" class="form-control" id="update_full_name" name="full_name" required> 
                     </div>
                     <div class="form-group">
                         <label for="phone" >Phone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" required> 
+                        <input type="text" class="form-control" id="update_phone" name="phone" required> 
                     </div>
                 
             </div>

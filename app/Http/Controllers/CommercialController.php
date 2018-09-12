@@ -17,7 +17,7 @@ class CommercialController extends Controller
         if($request->ajax()){
             return response()->json(Commercial::all());
         }
-        return view('commercial.index');
+        return view('commercial.index', ['commercials' => Commercial::all()]);
     }
 
         /**
@@ -37,7 +37,7 @@ class CommercialController extends Controller
             $commcercial = Commercial::create($request->all());
             return response()->json($commcercial);
         }
-        return response()->json("Nothing is here");
+        abort(403);
     }
 
     /**
@@ -52,7 +52,7 @@ class CommercialController extends Controller
             $commcercial = Commercial::findorFail($id);
                 return response()->json($commcercial);
         }
-        return response()->json("Nothing is here"); 
+        abort(403);
     }
 
 
@@ -71,14 +71,14 @@ class CommercialController extends Controller
                 'phone' => 'required',
             ]);
             
-            $commcercial = Commercial::find($id);
-            if($commcercial){
-                $commcercial->full_name = $request->full_name;
-                $commcercial->phone = $request->phone;
-            }
+            $commcercial = Commercial::findOrFail($id);
+           
+            $commcercial->full_name = $request->full_name;
+            $commcercial->phone = $request->phone;
+
             return response()->json($commcercial->saveOrFail());
         }
-        return response()->json("Nothing is here");
+        abort(403);
     }
 
     /**
@@ -87,8 +87,11 @@ class CommercialController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        return response()->json(Commercial::findOrFail($id)->delete());
+        if( $request->ajax() ){
+            return response()->json(Commercial::findOrFail($id)->delete());
+        }
+        abort(403);
     }
 }
