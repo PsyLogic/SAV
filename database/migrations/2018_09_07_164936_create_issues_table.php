@@ -28,6 +28,7 @@ class CreateIssuesTable extends Migration
             $table->timestamp('delivered_at');
             $table->timestamp('received_at')->nullable();
             $table->timestamp('closed_at')->nullable();
+            $table->softDeletes();
 
 
             $table->foreign('commercial_id')->references('id')->on('commercials');

@@ -17,6 +17,7 @@ class CreateCommertialsTable extends Migration
             $table->increments('id');
             $table->string('full_name');
             $table->string('phone')->nullable();
+            $table->softDeletes();
         });
     }
 
@@ -28,7 +29,7 @@ class CreateCommertialsTable extends Migration
     public function down()
     {
         Schema::table('commercials', function (Blueprint $table) {
-            //
+            Schema::dropIfExists('commercials');
         });
     }
 }

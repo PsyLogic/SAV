@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Issue extends Model
 {
+    use SoftDeletes;
+
     /**
      * Make all fiels assignable
      *
@@ -21,6 +24,7 @@ class Issue extends Model
     protected $dates = [
         'delivered_at',
         'received_at',
-        'closed_at'
+        'closed_at',
+        'deleted_at'
     ];
 }
