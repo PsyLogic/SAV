@@ -29,4 +29,9 @@ class Commercial extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+
+    public function issues(){
+        return $this->hasMany(Issue::class);
+    }
 }

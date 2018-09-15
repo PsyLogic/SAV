@@ -30,4 +30,8 @@ class Problem extends Model
     protected $dates = ['deleted_at'];
 
 
+
+    public function issues(){
+        return $this->belongsToMany(Issue::class);
+    }
 }

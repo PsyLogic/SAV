@@ -20,4 +20,7 @@ class Image extends Model
      */
     public $timestamps = false;
     
+    public function issue(){
+        $this->belongsTo(Issue::class);
+    }
 }

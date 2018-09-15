@@ -18,9 +18,16 @@ Route::get('/', function () {
 
 Route::resource('/commercials', 'CommercialController');
 Route::resource('/users', 'UserController');
-Route::resource('/problems', 'ProblemController');
 Route::put('/users/password/{id}', 'UserController@updatePassword');
+Route::resource('/problems', 'ProblemController');
+
+Route::get('/issues','IssueController@index');
+Route::get('/issues/create','IssueController@create');
+Route::post('/issues','IssueController@store');
+Route::post('/issues/{id}','IssueController@update');
+Route::post('/issues/final-step/{id}','IssueController@finalUpdate');
+Route::delete('/issues/{id}','IssueController@delete');
+
 
 Auth::routes();
-
 Route::get('/home', 'HomeController@index')->name('home');

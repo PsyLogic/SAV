@@ -37,5 +37,10 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+
+    public function issues(){
+        return $this->hasMany(Issue::class);
+    }
+
     
 }

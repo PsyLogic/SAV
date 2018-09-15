@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Define new Directive whish display a die dump
         Blade::directive('dd', function ($expression) {
-            return "<?php var_dump($expression); ?>";
+            return "<?php dd($expression);  ?>";
         });
     }
 

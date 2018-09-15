@@ -15,17 +15,16 @@ class CreateIssuesTable extends Migration
     {
         Schema::create('issues', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('imei');
-            $table->json('client');
+            $table->string('imei')->nullable()->default('999999999999999');
+            $table->json('client')->nullable();
             $table->unsignedInteger('commercial_id');
-            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('user_id')->nullable();
             $table->string('diagnostic')->nullable();
-            $table->unsignedInteger('problem_id');
+            $table->unsignedInteger('problem_id')->nullable();
             $table->string('extra_problem')->nullable();
             $table->string('solution')->nullable();
-            $table->string('status')->default(0);
             $table->double('charges')->default(0);
-            $table->timestamp('delivered_at');
+            $table->timestamp('delivered_at')->useCurrent();
             $table->timestamp('received_at')->nullable();
             $table->timestamp('closed_at')->nullable();
             $table->softDeletes();
