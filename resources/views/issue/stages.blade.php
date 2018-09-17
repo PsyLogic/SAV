@@ -64,7 +64,7 @@
                         <input type="hidden" name="diagnostic" value="hardware">
                         <div class="form-group">
                             <label for="problem_hardware">Problem</label>
-                            <select class="form-control" name="problem_id" id="problem_hardware" required>
+                            <select class="form-control" name="problems[]" id="problem_hardware" multiple required>
                                 <option value=""></option>
                                 @foreach($problems as $problem)
                                 <option data-eligible="{{ $problem->eligibility }}" value="{{ $problem->id }}">{{ $problem->content }}</option>

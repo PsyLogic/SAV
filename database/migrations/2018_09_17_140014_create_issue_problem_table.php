@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFilenameToImage extends Migration
+class CreateIssueProblemTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,11 @@ class AddFilenameToImage extends Migration
      */
     public function up()
     {
-        Schema::table('images', function (Blueprint $table) {
-            $table->string('file_name')->after('id');
+        Schema::create('issue_problem', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('issue_id');
+            $table->unsignedInteger('problem_id');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +28,6 @@ class AddFilenameToImage extends Migration
      */
     public function down()
     {
-        Schema::table('images', function (Blueprint $table) {
-            $table->dropColumn('file_name');
-        });
+        Schema::dropIfExists('issue_problem');
     }
 }

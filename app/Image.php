@@ -20,6 +20,10 @@ class Image extends Model
      */
     public $timestamps = false;
     
+    public function getImageUrl(){
+        return asset("storage").'/'.$this->file_name;
+    }
+    
     public function issue(){
         $this->belongsTo(Issue::class);
     }

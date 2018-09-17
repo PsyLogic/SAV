@@ -16,6 +16,7 @@ class CreateImagesTable extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('issue_id');
+            $table->string('file_name');
             $table->string('status')->default('before');
 
             $table->foreign('issue_id')->references('id')->on('issues');

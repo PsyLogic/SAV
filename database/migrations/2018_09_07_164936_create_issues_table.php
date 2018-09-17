@@ -20,7 +20,6 @@ class CreateIssuesTable extends Migration
             $table->unsignedInteger('commercial_id');
             $table->unsignedInteger('user_id')->nullable();
             $table->string('diagnostic')->nullable();
-            $table->unsignedInteger('problem_id')->nullable();
             $table->string('extra_problem')->nullable();
             $table->string('solution')->nullable();
             $table->double('charges')->default(0);
@@ -32,7 +31,6 @@ class CreateIssuesTable extends Migration
 
             $table->foreign('commercial_id')->references('id')->on('commercials');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('problem_id')->references('id')->on('problems');
         });
     }
 

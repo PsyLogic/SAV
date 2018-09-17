@@ -83,7 +83,9 @@ class IssueController extends Controller
      */
     public function show($id)
     {
-        //
+        //return Issue::where('id',$id)->with(['commercial:id,full_name','user:id,name'])->get();
+        $issue = Issue::findOrfail($id);//where('id',$id)->with(['commercial:id,full_name','user:id,name'])->get();
+        return view('issue.details',compact('issue'));
     }
 
     /**
@@ -259,26 +261,29 @@ class IssueController extends Controller
                 }
                 
 
-                // Check if problem is selected or an other problem is defined
-                $problem_id = $request->problem_id;
-                if($problem_id < 0){
-                    $problem = Problem::create([
-                            'content' => $request->other_problem_content,
-                            'eligibility' => $request->eligibility
-                    ]);
-
-                    $problem_id = $problem->id;
-                }
-
                 // update issue information
                 $issue->diagnostic = $diagnostic; // The diagnostic if issue ( software).
-                $issue->problem_id = $problem_id; // The main Problem of the issue
                 $issue->extra_problem = $request->extra_problem ; // extra problems of the issue
                 $issue->solution = $request->solution; // The solution of the issue.
                 $issue->charges = $request->charges; // Fees of repair.
                 $issue->closed_at = $today; // The date of closing the issue.
                 $issue->stage = 3; // Going to stage 3 of the issue (closed)
                 $issue->saveOrFail();
+
+                // Check if problem is selected or an other problem is defined
+                $problem_id = $request->problems[0];
+                if($problem_id < 0){
+                    $problem = Problem::create([
+                            'content' => $request->other_problem_content,
+                            'eligibility' => $request->eligibility
+                    ]);
+
+                    $problem = Problem::find($problem->id);
+                    $issue->problems()->attach($problem);
+                }
+
+                $problems = Problem::find($request->problems);
+                $issue->problems()->attach($problems);
                 
                 return response()->json(['message' => "Thank you for your work, the issue is closed now"],200);
             }
@@ -296,6 +301,35 @@ class IssueController extends Controller
     {
         //
     }
+
+    /**
+     * Get Images of Issue.
+     *
+     * @param  \App\Issue  $issue
+     * @return \Illuminate\Http\Response
+     */
+    public function images(Request $request)
+    {
+        if($request->ajax()){
+            
+            $id = $request->id;
+            $status = $request->status;
+    
+            $images = Image::where('issue_id',$id)
+                            ->where('status',$status)
+                            ->get();
+            $images = $images->map(function($item){
+                $item->file_name = $item->getImageUrl();
+                return $item;
+            });
+            return response()->json($images);
+
+        }
+
+        abort(403);
+    }
+
+
 
     
     private function getClientInformation($imei){

@@ -38,7 +38,7 @@
                                         <button type="button" class="btn btn-secondary btn-md btn-fix" data-stage="{{ $issue->stage }}" data-id="{{$issue->id}}" title="Fix"><i class="fas fa-wrench"></i></button>
                                     @endif
                                     @if($issue->stage == 2)
-                                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                            <i class="fas fa-wrench"></i>
                                         </button>
                                         <div class="dropdown-menu">
@@ -99,10 +99,11 @@
             dataType: 'json',
             success: function(data){
                 var rows = '';
-                $.each(data,function(i,issue){
+                $.each(data,function(i,issue)
+                {
                     rows += '\
                     <tr>\
-                        <th scope="row">'+(i+1)+'</th>\
+                        <th scope="row">'+(parseInt(i) + 1)+'</th>\
                         <td>'+(issue.imei || "UNKOWN")+'</td>\
                         <td>'+issue.commercial.full_name+'</td>\
                         <td>'+( issue.user ?  issue.user.name : "Not Assigned" )+'</td>\
@@ -112,7 +113,7 @@
                                 if(issue.stage == 1)
                                     rows +='<button type="button" class="btn btn-secondary btn-md btn-fix" data-stage="'+ issue.stage+'" data-id="'+issue.id+'" title="Fix"><i class="fas fa-wrench"></i></button>';
                                 if(issue.stage == 2){
-                                    rows +='<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\
+                                    rows +='<button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\
                                         <i class="fas fa-wrench"></i>\
                                     </button>\
                                     <div class="dropdown-menu">\
@@ -132,6 +133,7 @@
             }
         });
     }
+    // getIssues();
 
 
     function updateToStage3(formId){
@@ -146,7 +148,7 @@
             processData:false,
             data: formData,
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 swal("Done", "The phone is fixed and the issue is closed, Thank you!", "success");
                 getIssues();
                 $('#'+ formId +' :input').val('');
@@ -170,6 +172,8 @@
                 swal("Error", errors, "error");
             }
         });
+
+        return false;
     }
 
     $(document).ready(function(){
@@ -180,14 +184,13 @@
             id = $(this).data('id'); // get id of the issue
             stage = $(this).data('stage'); // get stage of the issue
             var imei = $(this).parent().parent().parent().children().eq(1).text(); // get selected imei from table
-            console.log($(this).parent().parent().parent().children().eq(1));
-            console.log(imei);
             $('#update-to-stage-' + (stage+1)).modal('toggle'); // toggle modal based on stage of the issue
             $('#update_imei').val(imei); // assign the imei to update_imei input (modal in stage 2) 
 
             // Sumbit the form of stage 2
             $('#update-frm-to-stage-2').submit(function(e){
                 e.preventDefault();
+                e.stopImmediatePropagation();
 
                 if( isNaN($('#update_imei').val())  || ( $('#update_imei').val() != '' && $('#update_imei').val().length != 15 )){
                     alert('IMEI must be a valid of 15 number');
@@ -204,7 +207,7 @@
                     processData:false,
                     data: formData,
                     success: function (data) {
-                        console.log(data);
+                        // console.log(data);
                         swal("Done", "Reparation request is in process right now", "success");
                         getIssues();
                         $('#update-frm-to-stage-2 :input').val('');
@@ -229,6 +232,8 @@
                     }
 
                 });
+
+                return false;
             });
             
             var diagnostic = $(this).text(); // Type of the problem (software or hadware)
@@ -244,19 +249,30 @@
 
 
             $('#update-frm-software').submit(function(e){
-                e.preventDefault()
+                e.preventDefault();
+                e.stopImmediatePropagation();
                 updateToStage3('update-frm-software');
             });
 
             $('#update-frm-hardware').submit(function(e){
-                e.preventDefault()
+                e.preventDefault();
+                e.stopImmediatePropagation();
                 updateToStage3('update-frm-hardware');
             });
 
             $('#problem_hardware').change(function(){
-                var eligible = $(this).find(':selected').data('eligible');
+                var elg = false;
+                var selected = $(this).find('option:selected', this);
                 
-                if(eligible == 0)
+                selected.each(function(){
+                    if($(this).data('eligible') == 0)
+                    {
+                        elg = true
+                        return;
+                    }
+                })
+                
+                if(elg)
                     $('.client-permission').show();
                 else
                     $('.client-permission').hide();

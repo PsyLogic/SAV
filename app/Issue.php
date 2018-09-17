@@ -53,6 +53,8 @@ class Issue extends Model
             return '<span class="badge badge-pill badge-success">Closed</span>';
     }
 
+    
+
     public function commercial(){
         return $this->belongsTo(Commercial::class);
     }
@@ -62,7 +64,7 @@ class Issue extends Model
     }
 
     public function problems(){
-        return $this->hasOne(Problem::class);
+        return $this->belongsToMany(Problem::class);
     }
 
 
