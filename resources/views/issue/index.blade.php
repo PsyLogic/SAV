@@ -1,5 +1,6 @@
 @extends('layouts.main')
 @section('css')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <style>
     td,th{
         text-align: center;
@@ -47,7 +48,7 @@
                                         </div>
                                     @endif
                                     &nbsp;
-                                    <button type="button" class="btn btn-info btn-md" data-id="{{$issue->id}}" title="Details"><i class="fas fa-info-circle"></i></button>
+                                    <a href="{{ route('issues.details',$issue->id) }}" class="btn btn-info btn-md" data-id="{{$issue->id}}" title="Details"><i class="fas fa-info-circle"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -66,7 +67,9 @@
 @endsection
 
 @section('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 <script>
+
     /**
      * URL of issue resources 
      * 
@@ -121,7 +124,7 @@
                                         <a class="dropdown-item btn-fix" href="#" data-stage="'+ issue.stage+'" data-id="'+issue.id+'" title="hardware" >Hardware</a>\
                                     </div>';
                                 }
-                                rows +='&nbsp;<button type="button" class="btn btn-info btn-md" data-id="{{$issue->id}}" title="Details"><i class="fas fa-info-circle"></i></button>\
+                                rows +='&nbsp;<a href="/issues/'+issue.id+'" class="btn btn-info btn-md" data-id="{{$issue->id}}" title="Details"><i class="fas fa-info-circle"></i></a>\
                             </div>\
                         </td>\
                     </tr>';
@@ -177,6 +180,11 @@
     }
 
     $(document).ready(function(){
+        // Init Multi select inputs
+        $('.fastsearch').select2({
+            width: 'resolve' // need to override the changed default
+        });
+
 
         // Button fix pop up a modal on which stage the issue in
         $('body').on('click','.btn-fix',function(){
@@ -237,7 +245,6 @@
             });
             
             var diagnostic = $(this).text(); // Type of the problem (software or hadware)
-            $('.other-problem').hide();
             $('.client-permission').hide();
             if(diagnostic=="Hardware"){
                 $('#hardware').show();
@@ -276,16 +283,13 @@
                     $('.client-permission').show();
                 else
                     $('.client-permission').hide();
-
-
-                if($(this).val() == -1){
-                    $('.other-problem').show();
-                }else{
-                    $('.other-problem').hide();
-                }
             });
 
             $('input[type=radio][name=eligibility]').change(function() {
+                if($('#extra_problem_hardware').val() == ''){
+                    alert('Please Fill Other Problem First');
+                    return;
+                }
                 if (this.value == 0) 
                     $('.client-permission').show();
                 else

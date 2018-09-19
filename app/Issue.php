@@ -66,6 +66,9 @@ class Issue extends Model
     public function problems(){
         return $this->belongsToMany(Problem::class);
     }
+    public function solutions(){
+        return $this->belongsToMany(Solution::class);
+    }
 
 
 }

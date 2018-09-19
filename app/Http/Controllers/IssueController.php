@@ -10,11 +10,12 @@ use App\Image;
 use Carbon\Carbon;
 use Auth;
 use App\Problem;
+use App\Solution;
 
 class IssueController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the issues.
      *
      * @return \Illuminate\Http\Response
      */
@@ -28,11 +29,11 @@ class IssueController extends Controller
             // });
             return response()->json($issues->sortByDesc('delivered_at'));
         }
-        return view('issue.index', ['issues' => $issues->sortByDesc('delivered_at'), 'problems' => Problem::all()]);
+        return view('issue.index', ['issues' => $issues->sortByDesc('delivered_at'), 'problems' => Problem::all(),'solutions' => Solution::all()]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new issue.
      *
      * @return \Illuminate\Http\Response
      */
@@ -42,7 +43,7 @@ class IssueController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created issue
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -76,34 +77,22 @@ class IssueController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified issue.
      *
-     * @param  \App\Issue  $issue
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        //return Issue::where('id',$id)->with(['commercial:id,full_name','user:id,name'])->get();
-        $issue = Issue::findOrfail($id);//where('id',$id)->with(['commercial:id,full_name','user:id,name'])->get();
+        $issue = Issue::findOrfail($id);
         return view('issue.details',compact('issue'));
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Issue  $issue
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update Issue to 2nd stage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Issue  $issue
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -166,20 +155,22 @@ class IssueController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the issue to 3rd stage (final stage).
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Issue  $issue
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function finalUpdate(Request $request, $id)
     {
         if($request->ajax()){
-            // return $request->all();
+
             $issue = Issue::findOrFail($id);
             $imei = $issue->imei;
             $diagnostic = $request->diagnostic;
             $images = $request->file('images');
+            
+            
             if($diagnostic == 'software'){
                 $this->validate($request,[
                     'solution' => 'required',
@@ -213,11 +204,22 @@ class IssueController extends Controller
                     return response()->json(['message' => $errors],412);
                 }
                 
-                // update issue information
+                // Check if solution is selected or an other solution is defined
+                
+                if(!empty($request->extra_solution)){
+                    $solution = Solution::create([
+                            'content' => $request->extra_solution,
+                    ]);
 
+                    $solution = Solution::find($solution->id);
+                    $issue->solutions()->attach($solution);
+                }
+
+                $solutions = Solution::find($request->solution);
+                $issue->solutions()->attach($solutions);
+
+                // update issue information
                 $issue->diagnostic = $diagnostic; // The diagnostic if issue ( software).
-                $issue->extra_problem = $request->extra_problem ; // extra problems of the issue
-                $issue->solution = $request->solution ; // The solution of the issue.
                 $issue->closed_at = $today; // The date of closing the issue.
                 $issue->stage = 3; // Going to stage 3 of the issue (Closed)
                 $issue->saveOrFail();
@@ -263,18 +265,16 @@ class IssueController extends Controller
 
                 // update issue information
                 $issue->diagnostic = $diagnostic; // The diagnostic if issue ( software).
-                $issue->extra_problem = $request->extra_problem ; // extra problems of the issue
-                $issue->solution = $request->solution; // The solution of the issue.
                 $issue->charges = $request->charges; // Fees of repair.
                 $issue->closed_at = $today; // The date of closing the issue.
                 $issue->stage = 3; // Going to stage 3 of the issue (closed)
                 $issue->saveOrFail();
 
                 // Check if problem is selected or an other problem is defined
-                $problem_id = $request->problems[0];
-                if($problem_id < 0){
+
+                if(!empty($request->extra_problem)){
                     $problem = Problem::create([
-                            'content' => $request->other_problem_content,
+                            'content' => $request->extra_problem,
                             'eligibility' => $request->eligibility
                     ]);
 
@@ -284,6 +284,21 @@ class IssueController extends Controller
 
                 $problems = Problem::find($request->problems);
                 $issue->problems()->attach($problems);
+
+
+                if(!empty($request->extra_solution)){
+                    $solution = Solution::create([
+                            'content' => $request->extra_solution,
+                    ]);
+
+                    $solution = Solution::find($solution->id);
+                    $issue->solutions()->attach($solution);
+                }
+
+                $solutions = Solution::find($request->solution);
+                $issue->solutions()->attach($solutions);
+
+
                 
                 return response()->json(['message' => "Thank you for your work, the issue is closed now"],200);
             }
@@ -294,7 +309,7 @@ class IssueController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Issue  $issue
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -305,7 +320,7 @@ class IssueController extends Controller
     /**
      * Get Images of Issue.
      *
-     * @param  \App\Issue  $issue
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function images(Request $request)

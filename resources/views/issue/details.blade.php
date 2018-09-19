@@ -224,6 +224,7 @@
 <div class="row justify-content-center">
     <div class="col-10">
         <div class="main-timeline">
+            {{-- Stage 1 --}}
             <div class="timeline">
                 <span class="timeline-icon"></span>
                 <span class="year">02-02-2018</span>
@@ -235,6 +236,10 @@
                     </p>
                 </div>
             </div>
+            {{-- End Stage 1 --}}
+
+            {{-- Stage 2 --}}
+            @if($issue->stage > 1)
             <div class="timeline">
                 <span class="timeline-icon"></span>
                 <span class="year">04-02-2018</span>
@@ -264,12 +269,14 @@
                                 </table>
                             </div>
                         </div>
-                        
-                        
                     </p>
                 </div>
             </div>
+            @endif
+            {{-- End Stage 2 --}}
 
+            {{-- Stage 3 --}}
+            @if($issue->stage == 3)
             <div class="timeline">
                 <span class="timeline-icon"></span>
                 <span class="year">10-02-2018</span>
@@ -294,31 +301,37 @@
                                             <th>IMEI</th>
                                             <td><span class="badge-pill ">{{ $issue->imei }}</span></td>
                                         </tr>
+                                        <tr>
                                             <th>Main Issue</th>
                                             <td>
-                                                @forelse ($issue->problems as $problem)
-                                                <span class="badge-pill ">{{ $problem->content }}</span><br>
-                                                @empty
-                                                <span class="badge-pill ">Software Issue</span>
-                                                @endforelse
+                                                <span class="badge-pill ">{{ $issue->diagnostic }}</span><br>
                                             </td>
-                                            {{-- <td><span class="badge-pill ">{{ $issue->problems->content }}</span></td> --}}
                                         </tr>
-                                        @if($issue->extra_problem != '')
-                                        </tr>
-                                            <th>Extra Problems</th>
-                                            <td><span class="badge-pill ">{{ $issue->extra_problem }}</span></td>
+                                        @if(count($issue->problems))
+                                        <tr>
+                                            <th>Problems found</th>
+                                            <td>
+                                                @foreach($issue->problems as $problem)
+                                                <span class="badge-pill ">{{ $problem->content }}</span><br>
+                                                @endforeach
+                                            </td>
                                         </tr>
                                         @endif
-                                        <th>Solution</th>
-                                        <td><span class="badge-pill ">{{ $issue->solution }}</span></td>
-                                        </tr>
-                                        <th>Pictures</th>
-                                        <td><button class="btn btn-sm btn-success info" data-status='after' data-id="{{ $issue->id }}">show</button></td>
+                                        <tr>
+                                            <th>Solution</th>
+                                            <td>
+                                                @foreach ($issue->solutions as $soution)
+                                                <span class="badge-pill ">{{ $soution->content }}</span><br>
+                                                @endforeach
+                                            </td>
                                         </tr>
                                         <tr>
-                                        <th>Fees</th>
-                                        <td><span class="badge-pill ">{{ $issue->charges }} DH</span></td>
+                                            <th>Pictures</th>
+                                            <td><button class="btn btn-sm btn-success info" data-status='after' data-id="{{ $issue->id }}">show</button></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Fees</th>
+                                            <td><span class="badge-pill ">{{ $issue->charges }} DH</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -328,6 +341,8 @@
                     </p>
                 </div>
             </div>
+            @endif
+            {{-- End Stage 3 --}}
             
         </div>
     </div>
