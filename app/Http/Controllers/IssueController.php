@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Auth;
 use App\Problem;
 use App\Solution;
+use PDF;
 
 class IssueController extends Controller
 {
@@ -345,6 +346,29 @@ class IssueController extends Controller
     }
 
 
+    /**
+     * Get Report summary of an issue
+     *
+     * @param [integer] $id
+     * @return void
+     */
+    public function report($id){
+        
+        $issue = Issue::findOrFail($id);
+        return view('issue.report', compact('issue'));
+
+        // view()->share('issue',$issue);
+        // return route('issues.report',1);
+
+
+         $pdf = PDF::loadView('issue.report');
+        //  $pdf = PDF::loadView('issue.report', compact('issue'));
+        //  $file_name = 'report-'. $issue->imei . '.pdf';
+         return $pdf->download('report.pdf');
+
+    }
+
+
 
     
     private function getClientInformation($imei){
@@ -360,21 +384,25 @@ class IssueController extends Controller
     private function verifyIMEI($imei){
         $endpoint = "http://154.70.200.106:8004/api/getinfo";
         $client = new  \GuzzleHttp\Client();
+        $options = [ 'query' => ['imei' => $imei] ];
         
-        $response = $client->request('GET', $endpoint, ['query' => [
-            'imei' => $imei,
-        ]]);
+        $response = $client->request('GET', $endpoint, $options);
 
         $content = json_decode($response->getBody(), true);
         $statusCode = $content['status']; 
 
         if($statusCode == 200){
+            $phone_info = $content['data'][0];
             $registration_info = $content['data'][0]['registration'];
             $client_info = $content['data'][0]['registration']['client'];
             $content = [
+                "imei2"     => $phone_info['imei2'],
+                "model"     => $phone_info['model']['name'],
                 "date_flow" => $registration_info['data_flow'],
                 "full_name" => $client_info['first_name'] . ' ' . $client_info['last_name'],
-                "tel" => $client_info['tel'],
+                "address" => $client_info['address'] ?? '',
+                "city" => $client_info['city'] ?? '',
+                "tel" => $client_info['tel'] ?? '',
             ];
         }else{
             $content = $content['data'];

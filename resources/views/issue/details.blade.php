@@ -227,7 +227,7 @@
             {{-- Stage 1 --}}
             <div class="timeline">
                 <span class="timeline-icon"></span>
-                <span class="year">02-02-2018</span>
+                <span class="year">{{ $issue->french_format($issue->delivered_at) }}</span>
                 <div class="timeline-content">
                     <span class="icon far fa-envelope"></span> 
                     <h3 class="title">Issue Delivered</h3>
@@ -242,7 +242,7 @@
             @if($issue->stage > 1)
             <div class="timeline">
                 <span class="timeline-icon"></span>
-                <span class="year">04-02-2018</span>
+                <span class="year">{{$issue->french_format($issue->received_at)}}</span>
                 <div class="timeline-content">
                     <span class="icon far fa-envelope-open"></span>
                     <h3 class="title">Issue Received</h3>
@@ -279,7 +279,7 @@
             @if($issue->stage == 3)
             <div class="timeline">
                 <span class="timeline-icon"></span>
-                <span class="year">10-02-2018</span>
+                <span class="year">{{$issue->french_format($issue->closed_at)}}</span>
                 <div class="timeline-content">
                         <span class="icon fas fa-wrench"></span> 
                     <h3 class="title">Issue Resolved</h3>
@@ -359,10 +359,6 @@
             </div>
             <div class="modal-body text-center">
                 <div class="popup-gallery">
-                    {{-- <a href="https://via.placeholder.com/500?text=Picture+1"><img src="https://via.placeholder.com/150?text=Picture+1" alt="..." width="150" height="150" class="img-thumbnail img-fluid"></a>
-                    <a href="https://via.placeholder.com/500?text=Picture+2"><img src="https://via.placeholder.com/150?text=Picture+2" alt="..." class="img-thumbnail img-fluid"></a>
-                    <a href="https://via.placeholder.com/500?text=Picture+3"><img src="https://via.placeholder.com/150?text=Picture+3" alt="..." class="img-thumbnail img-fluid"></a>
-                    <a href="https://via.placeholder.com/500?text=Picture+4"><img src="https://via.placeholder.com/150?text=Picture+4" alt="..." class="img-thumbnail img-fluid"></a> --}}
                 </div>
             </div>
             </div>
@@ -371,69 +367,7 @@
 </div>
 
 @endsection
-
 @section('js')
 <script src="{{ asset('js/popup.js')}}"></script>
-<script>
-  $(document).ready(function(){
-
-      $('body').on('click','.info',function(){
-            var id = $(this).data('id');
-            var status = $(this).data('status');
-            $.ajax({
-                type:'GET',
-                url:'/issues/images',
-                data:{id:id,status:status},
-                success:function(response){
-                    var images='';
-                    $.each(response,function(key,image){
-                        images += '<a href="'+image.file_name+'"><img src="'+image.file_name+'" alt="..." style="height:150px; width:150px;"  class="img-thumbnail img-fluid"></a>'+"\n";
-                    });
-                    $('.popup-gallery').html(images);
-                    $('#images-modal').modal('toggle');
-                },
-                error:function(response){
-                    console.log(response);
-                }
-            });
-
-      });
-
-
-      $('.popup-gallery').magnificPopup({
-            delegate: 'a',
-            type: 'image',
-            tLoading: 'Loading image #%curr%...',
-            mainClass: 'mfp-img-mobile',
-            gallery: {
-                enabled: true,
-                navigateByImgClick: true,
-                preload: [0,1] // Will preload 0 - before current, and 1 after the current image
-            },
-            image: {
-                tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
-                titleSrc: function(item) {
-                    return '<small>the initial status of broken phone</small>';
-                }
-            },
-            callbacks: {
-                open:function(){
-                    $('#images-modal').modal('toggle');
-                    console.log('fsdfsdf');
-                },
-                close:function(){
-                    $('#images-modal').modal('toggle');
-                }
-            }
-        });
-
-
-
-
-
-
-
-  });
-</script>
-
+<script src="{{ asset('js/app/issue_details.js') }}"></script>
 @stop

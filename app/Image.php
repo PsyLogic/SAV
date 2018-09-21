@@ -24,7 +24,7 @@ class Image extends Model
         return asset("storage").'/'.$this->file_name;
     }
     
-    public function issue(){
+    public function issues(){
         $this->belongsTo(Issue::class);
     }
 }

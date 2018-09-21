@@ -42,5 +42,15 @@ class User extends Authenticatable
         return $this->hasMany(Issue::class);
     }
 
+    public function isAdmin(){
+        return strtolower($this->type) == 'admin';
+    }
+    public function isSAV(){
+        return strtolower($this->type) == 'sav';
+    }
+    public function isCommercial(){
+        return strtolower($this->type) == 'commercial';
+    }
+
     
 }

@@ -1,33 +1,30 @@
 /**
- * URL of Problems resources 
+ * URL of Solution resources 
  * 
  */
-var url_problem = "/problems"
+var url_solution = "/solutions"
 
 var id = null;
 
 /**
- *  Return list of Problems 
+ *  Return list of Solutions 
  * 
  */
-function getProblems() {
+function getSolutions() {
     $.ajax({
         type: 'GET',
-        url: url_problem,
+        url: url_solution,
         dataType: 'json',
         success: function (data) {
             var rows = '';
-            var eligibility = "";
-            $.each(data, function (i, problem) {
-                eligibility = problem.eligibility ? 'Yes' : 'No';
+            $.each(data, function (i, solution) {
                 rows += '\
                    <tr>\
-                       <th scope="row">' + (i + 1) + '</th>\
-                       <td>' + problem.content + '</td>\
-                       <td>' + eligibility + '</td>\
+                       <th scope="row">' + (parseInt(i) + 1) + '</th>\
+                       <td>' + solution.content + '</td>\
                        <td>\
-                           <button type="button" class="btn btn-danger" data-id="' + problem.id + '" title="Delete"><i class="fa fa-times"></i></button>\
-                           <button type="button" class="btn btn-info" data-id="' + problem.id + '" title="Edit"><i class="far fa-edit"></i></button>\
+                           <button type="button" class="btn btn-danger" data-id="' + solution.id + '" title="Delete"><i class="fa fa-times"></i></button>\
+                           <button type="button" class="btn btn-info" data-id="' + solution.id + '" title="Edit"><i class="far fa-edit"></i></button>\
                        </td>\
                    </tr>\
                    ';
@@ -42,19 +39,19 @@ function getProblems() {
 
 $(document).ready(function () {
 
-    // Insert new Commercial
-    $('#add-frm-problem').submit(function (e) {
+    // Insert new Solution
+    $('#add-frm-solution').submit(function (e) {
         e.preventDefault();
         var formData = $(this).serialize();
         $.ajax({
             type: 'POST',
-            url: url_problem,
+            url: url_solution,
             dataType: 'json',
             data: formData,
             success: function (data) {
-                swal("Done", "Problem added successfully !", "success");
+                swal("Done", "Solution added successfully !", "success");
                 $('#content').val('');
-                getProblems();
+                getSolutions();
             },
             error: function (response) {
                 console.log(response);
@@ -81,22 +78,17 @@ $(document).ready(function () {
 
         $.ajax({
             type: 'GET',
-            url: url_problem + '/' + id,
+            url: url_solution + '/' + id,
             dataType: 'json',
-            success: function (problem) {
-                $('#update_content').val(problem.content);
-                if (problem.eligibility)
-                    $('#update_eligibility2').prop("checked", true);
-                else
-                    $('#update_eligibility').prop("checked", true);
-
-                $('#update-problem').modal('toggle');
+            success: function (solution) {
+                $('#update_content').val(solution.content);
+                $('#update-solution').modal('toggle');
             },
             error: function (response) {
                 console.log(response);
                 var errors = "";
                 if (response.status == 404) {
-                    errors = "Problem not found";
+                    errors = "Solution not found";
                 } else if (response.status == 500) {
                     errors = "Message: " + response.responseJSON.message +
                         "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
@@ -107,19 +99,19 @@ $(document).ready(function () {
         });
     });
 
-    // Update Problem info
-    $('#update-frm-problem').submit(function (e) {
+    // Update Solution info
+    $('#update-frm-solution').submit(function (e) {
         e.preventDefault();
         var formData = $(this).serialize();
         $.ajax({
             type: 'PUT',
-            url: url_problem + '/' + id,
+            url: url_solution + '/' + id,
             dataType: 'json',
             data: formData,
             success: function (data) {
                 console.log(data);
-                swal("Done", "problem updated successfully !", "success");
-                getProblems();
+                swal("Done", "solution updated successfully !", "success");
+                getSolutions();
             },
             error: function (response) {
                 console.log(response);
@@ -139,12 +131,12 @@ $(document).ready(function () {
 
     });
 
-    // Delete Problem
+    // Delete Solution
     $('body').on('click', '.btn-danger', function () {
         id = $(this).data('id');
         swal({
                 title: "Delete confirmation",
-                text: "Do you want to delete this Problem, we will keep it information for tracking reasons",
+                text: "Do you want to delete this Solution, we will keep it information for tracking reasons",
                 icon: "warning",
                 buttons: ["Cancel", true],
                 dangerMode: true,
@@ -153,12 +145,11 @@ $(document).ready(function () {
                 if (willDelete) {
                     $.ajax({
                         type: 'DELETE',
-                        url: url_problem + '/' + id,
+                        url: url_solution + '/' + id,
                         dataType: 'json',
                         success: function (data) {
-                            console.log(data);
-                            swal("Done", "Problem deleted successfully !", "success");
-                            getProblems();
+                            swal("Done", "Solution deleted successfully !", "success");
+                            getSolutions();
                         },
                         error: function (response) {
                             console.log(response);
@@ -168,7 +159,7 @@ $(document).ready(function () {
                                     "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
 
                             } else if (response.status == 404) {
-                                errors = "Problem Not Found";
+                                errors = "Solution Not Found";
                             }
                             swal("Error", errors, "error");
                         }

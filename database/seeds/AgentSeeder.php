@@ -14,16 +14,23 @@ class AgentSeeder extends Seeder
     public function run()
     {
         User::create([
-            'name' => "adam smith",
-            'username' =>"adam",
+            'name' => "Walid STG",
+            'username' =>"admin",
+            'email' => "",
+            'type' => 'admin',
+            'password' => Hash::make('123456'),
+        ]);
+        User::create([
+            'name' => "Ahmed kiki",
+            'username' =>"commercial",
             'email' => "",
             'type' => 'Commercial',
             'password' => Hash::make('123456'),
         ]);
         
         User::create([
-            'name' => "devdas khan",
-            'username' =>"devdas",
+            'name' => "Zakaria Kacem",
+            'username' =>"sav",
             'email' => "",
             'type' => 'SAV',
             'password' => Hash::make('123456'),

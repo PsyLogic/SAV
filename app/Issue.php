@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class Issue extends Model
 {
@@ -68,6 +69,22 @@ class Issue extends Model
     }
     public function solutions(){
         return $this->belongsToMany(Solution::class);
+    }
+
+    public function french_format($date){
+        return Carbon::parse($date)->format('d-m-Y');
+    }
+
+    public function imagesBefore(){
+        return $this->hasMany(Image::class)->where('status','before');
+    }
+
+    public function imagesAfter(){
+        return $this->hasMany(Image::class)->where('status','after');
+    }
+    
+    public function getFeesDHAttribute(){
+        return $this->charges . ' DH';
     }
 
 

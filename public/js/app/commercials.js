@@ -1,33 +1,31 @@
 /**
- * URL of Problems resources 
+ * URL of commercial resources 
  * 
  */
-var url_problem = "/problems"
+var url_commercial = "/commercials"
 
 var id = null;
 
 /**
- *  Return list of Problems 
+ *  Return list of commercials 
  * 
  */
-function getProblems() {
+function getCommercials() {
     $.ajax({
         type: 'GET',
-        url: url_problem,
+        url: url_commercial,
         dataType: 'json',
         success: function (data) {
             var rows = '';
-            var eligibility = "";
-            $.each(data, function (i, problem) {
-                eligibility = problem.eligibility ? 'Yes' : 'No';
+            $.each(data, function (i, commercial) {
                 rows += '\
                    <tr>\
                        <th scope="row">' + (i + 1) + '</th>\
-                       <td>' + problem.content + '</td>\
-                       <td>' + eligibility + '</td>\
+                       <td>' + commercial.full_name + '</td>\
+                       <td>' + commercial.phone + '</td>\
                        <td>\
-                           <button type="button" class="btn btn-danger" data-id="' + problem.id + '" title="Delete"><i class="fa fa-times"></i></button>\
-                           <button type="button" class="btn btn-info" data-id="' + problem.id + '" title="Edit"><i class="far fa-edit"></i></button>\
+                       <button type="button" class="btn btn-danger" data-id="' + commercial.id + '" title="Delete"><i class="fa fa-times"></i></button>\
+                       <button type="button" class="btn btn-info" data-id="' + commercial.id + '" title="Edit"><i class="far fa-edit"></i></button>\
                        </td>\
                    </tr>\
                    ';
@@ -43,22 +41,23 @@ function getProblems() {
 $(document).ready(function () {
 
     // Insert new Commercial
-    $('#add-frm-problem').submit(function (e) {
+    $('#add-frm-commercial').submit(function (e) {
         e.preventDefault();
         var formData = $(this).serialize();
         $.ajax({
             type: 'POST',
-            url: url_problem,
+            url: url_commercial,
             dataType: 'json',
             data: formData,
             success: function (data) {
-                swal("Done", "Problem added successfully !", "success");
-                $('#content').val('');
-                getProblems();
+                console.log(data);
+                swal("Done", "Commercial added successfully !", "success");
+                $('#add-frm-commercial :input').val('');
+                getCommercials();
             },
             error: function (response) {
-                console.log(response);
                 var errors = "";
+                console.log(response);
                 if (response.status == 422) {
                     $.each(response.responseJSON.errors, function (field, error) {
                         errors += "- " + error[0] + "\n";
@@ -68,7 +67,6 @@ $(document).ready(function () {
                         "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
 
                 }
-                swal("Error", errors, "error");
             }
         });
 
@@ -81,22 +79,18 @@ $(document).ready(function () {
 
         $.ajax({
             type: 'GET',
-            url: url_problem + '/' + id,
+            url: url_commercial + '/' + id,
             dataType: 'json',
-            success: function (problem) {
-                $('#update_content').val(problem.content);
-                if (problem.eligibility)
-                    $('#update_eligibility2').prop("checked", true);
-                else
-                    $('#update_eligibility').prop("checked", true);
-
-                $('#update-problem').modal('toggle');
+            success: function (commercial) {
+                $('#update-frm-commercial #update_full_name').val(commercial.full_name);
+                $('#update-frm-commercial #update_phone').val(commercial.phone);
+                $('#update-commercial').modal('toggle');
             },
             error: function (response) {
                 console.log(response);
                 var errors = "";
                 if (response.status == 404) {
-                    errors = "Problem not found";
+                    errors = "Commercial not found";
                 } else if (response.status == 500) {
                     errors = "Message: " + response.responseJSON.message +
                         "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
@@ -107,19 +101,19 @@ $(document).ready(function () {
         });
     });
 
-    // Update Problem info
-    $('#update-frm-problem').submit(function (e) {
+    // Update Commercial info
+    $('#update-frm-commercial').submit(function (e) {
         e.preventDefault();
         var formData = $(this).serialize();
         $.ajax({
             type: 'PUT',
-            url: url_problem + '/' + id,
+            url: url_commercial + '/' + id,
             dataType: 'json',
             data: formData,
             success: function (data) {
                 console.log(data);
-                swal("Done", "problem updated successfully !", "success");
-                getProblems();
+                swal("Done", "Commercial updated successfully !", "success");
+                getCommercials();
             },
             error: function (response) {
                 console.log(response);
@@ -139,12 +133,12 @@ $(document).ready(function () {
 
     });
 
-    // Delete Problem
+    // Delete Commercial
     $('body').on('click', '.btn-danger', function () {
         id = $(this).data('id');
         swal({
                 title: "Delete confirmation",
-                text: "Do you want to delete this Problem, we will keep it information for tracking reasons",
+                text: "Do you want to delete the commercial",
                 icon: "warning",
                 buttons: ["Cancel", true],
                 dangerMode: true,
@@ -153,12 +147,12 @@ $(document).ready(function () {
                 if (willDelete) {
                     $.ajax({
                         type: 'DELETE',
-                        url: url_problem + '/' + id,
+                        url: url_commercial + '/' + id,
                         dataType: 'json',
                         success: function (data) {
                             console.log(data);
-                            swal("Done", "Problem deleted successfully !", "success");
-                            getProblems();
+                            swal("Done", "Commercial deleted successfully !", "success");
+                            getCommercials();
                         },
                         error: function (response) {
                             console.log(response);
@@ -168,13 +162,17 @@ $(document).ready(function () {
                                     "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
 
                             } else if (response.status == 404) {
-                                errors = "Problem Not Found";
+                                errors = "Commercial Not Found";
                             }
                             swal("Error", errors, "error");
                         }
                     });
                 }
             });
+
+
+
     });
+
 
 });
