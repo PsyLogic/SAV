@@ -16,7 +16,7 @@ class CreateIssuesTable extends Migration
         Schema::create('issues', function (Blueprint $table) {
             $table->increments('id');
             $table->string('imei')->nullable()->default('999999999999999');
-            $table->json('client')->nullable();
+            $table->text('client')->nullable();
             $table->unsignedInteger('commercial_id');
             $table->unsignedInteger('user_id')->nullable();
             $table->string('diagnostic')->nullable();
