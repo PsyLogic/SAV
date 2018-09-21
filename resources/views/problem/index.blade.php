@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-5">
+    <div class="col-4">
         <div class="card">
             <h5 class="card-header text-center text-uppercase">Insert new Problem</h5>
             <form action="" method="post" id="add-frm-problem">
@@ -29,7 +29,7 @@
             </form>
         </div>
     </div>
-    <div class="col-5">
+    <div class="col-8">
         <div class="card">
             <h5 class="card-header text-center text-uppercase">List of commen Problems</h5>
             <div class="card-body">

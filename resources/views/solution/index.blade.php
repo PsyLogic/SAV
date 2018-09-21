@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-5">
+    <div class="col-4">
         <div class="card">
             <h5 class="card-header text-center text-uppercase">Insert new Solution</h5>
             <form action="" method="post" id="add-frm-solution">
@@ -18,21 +18,21 @@
             </form>
         </div>
     </div>
-    <div class="col-5">
+    <div class="col-8">
         <div class="card">
             <h5 class="card-header text-center text-uppercase">List of commen Solutions</h5>
-            <div class="card-body">
-                <table class="table">
+            <div class="card-body" class="">
+                <table class="table" >
                     <thead class="thead-dark">
                       <tr>
                         <th scope="col">#</th>
                         <th scope="col">Content</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" class="text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                         @forelse($solutions as $solution)
-                        <tr>
+                        <tr class="">
                             <th scope="row">{{  $loop->iteration  }}</th>
                             <td>{{ $solution->content }}</td>
                             <td class="text-center">

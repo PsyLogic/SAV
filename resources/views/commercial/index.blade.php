@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-5">
+    <div class="col-4">
         <div class="card">
             <h5 class="card-header text-center text-uppercase">Insert new Commercial</h5>
             <form action="" method="post" id="add-frm-commercial">
@@ -21,7 +21,7 @@
             </form>
         </div>
     </div>
-    <div class="col-5">
+    <div class="col-8">
         <div class="card">
             <h5 class="card-header text-center text-uppercase">List of Commercials</h5>
             <div class="card-body">
@@ -31,7 +31,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Full Name</th>
                         <th scope="col">Phone</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" class="text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -40,7 +40,7 @@
                             <th scope="row">{{ $loop->iteration }}</th>
                             <td>{{$commercial->full_name}}</td>
                             <td>{{$commercial->phone}}</td>
-                            <td>
+                            <td class="text-center">
                                 <button type="button" class="btn btn-danger" data-id="{{$commercial->id}}" title="Delete"><i class="fa fa-times"></i></button>
                                 <button type="button" class="btn btn-info" data-id="{{$commercial->id}}" title="Edit"><i class="far fa-edit"></i></button>
                             </td>
