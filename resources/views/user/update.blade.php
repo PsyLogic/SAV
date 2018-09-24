@@ -9,6 +9,7 @@
         </div>
         <form action="" method="post" id="update-frm-user">
             <div class="modal-body">
+                    @csrf
                 <div class="form-group">
                     <label for="name" >Full Name</label>
                     <input type="text" class="form-control" id="update_name" name="name" autocomplete="off" required> 
@@ -50,6 +51,7 @@
         </div>
         <form action="" method="post" id="update-frm-user-password">
             <div class="modal-body">
+                @csrf
                 <div class="form-group">
                     <label for="password" >New Password</label>
                     <input type="password" class="form-control" id="update_password" name="password" autocomplete="off" required> 

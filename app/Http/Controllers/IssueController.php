@@ -55,7 +55,8 @@ class IssueController extends Controller
             
             $validate = Validator::make($request->all(),[
                 'imei' => 'between:0:15',
-                'commercial_id' => 'required'
+                'commercial_id' => 'required',
+                'received_at' => 'required'
             ]);
             
             $imei = $request->imei;
@@ -68,10 +69,11 @@ class IssueController extends Controller
             $issue = Issue::create([
                 'imei' => $imei,
                 'commercial_id' => $request->commercial_id,
-                'client' => $client
+                'client' => $client,
+                'received_at' => $request->received_at,
             ]);
                 
-                return response()->json($issue);
+            return response()->json($issue);
         }
 
         abort(403);
@@ -116,7 +118,7 @@ class IssueController extends Controller
                 return response()->json($client,404);
            
             // Upload init Images of phone 
-            $path = $today->format('Y-m-d').'/'.$imei;
+            $path = $today->format('Y-m-d').'/'.$id;
             $errors = "";
             
             if($request->hasFile('images')){
@@ -167,21 +169,30 @@ class IssueController extends Controller
         if($request->ajax()){
 
             $issue = Issue::findOrFail($id);
-            $imei = $issue->imei;
             $diagnostic = $request->diagnostic;
             $images = $request->file('images');
+            $errors = "";
             
-            
+
+            if($request->imei_stage_3 == "999999999999999" || empty($request->imei_stage_3)){
+                $errors = "You must Fill the IMEI field with the real one";
+                return response()->json(['message' => $errors],412);
+            }
+
+            $imei = $request->imei_stage_3;
+
             if($diagnostic == 'software'){
                 $this->validate($request,[
                     'solution' => 'required',
                     'images.*' => 'image|mimes:jpg,jpeg,png|max:2048'
                 ]);
 
+                
+
                 // Upload init Images of phone 
                 $today = Carbon::now();
-                $path = $today->format('Y-m-d').'/'.$imei;
-                $errors = "";
+                $path = $today->format('Y-m-d').'/'.$id;
+                
 
                 if($request->hasFile('images')){
 
@@ -220,6 +231,7 @@ class IssueController extends Controller
                 $issue->solutions()->attach($solutions);
 
                 // update issue information
+                $issue->imei = $imei; // The diagnostic if issue ( software).
                 $issue->diagnostic = $diagnostic; // The diagnostic if issue ( software).
                 $issue->closed_at = $today; // The date of closing the issue.
                 $issue->stage = 3; // Going to stage 3 of the issue (Closed)
@@ -236,7 +248,7 @@ class IssueController extends Controller
 
                 // Upload init Images of phone 
                 $today = Carbon::now();
-                $path = $today->format('Y-m-d').'/'.$imei;
+                $path = $today->format('Y-m-d').'/'.$id;
                 $errors = "";
 
                 if($request->hasFile('images')){
@@ -265,6 +277,7 @@ class IssueController extends Controller
                 
 
                 // update issue information
+                $issue->imei = $imei; // The diagnostic if issue ( software).
                 $issue->diagnostic = $diagnostic; // The diagnostic if issue ( software).
                 $issue->charges = $request->charges; // Fees of repair.
                 $issue->closed_at = $today; // The date of closing the issue.

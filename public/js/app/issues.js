@@ -6,6 +6,8 @@ var url_issue = "/issues"
 
 var id = null;
 
+var listIssuesTable = null;
+
 
 /**
  * 
@@ -33,12 +35,17 @@ function getIssues() {
         url: url_issue,
         dataType: 'json',
         success: function (data) {
+
+            if(listIssuesTable){
+                listIssuesTable.destroy();
+            }
+
             var rows = '';
             $.each(data, function (i, issue) {
                 rows += '\
-                   <tr>\
+                   <tr id="row'+issue.id+'">\
                        <th scope="row">' + (parseInt(i) + 1) + '</th>\
-                       <td>' + (issue.imei || "UNKOWN") + '</td>\
+                       <td>' + (issue.imei || "999999999999999") + '</td>\
                        <td>' + issue.commercial.full_name + '</td>\
                        <td>' + (issue.user ? issue.user.name : "Not Assigned") + '</td>\
                        <td>' + stageProcess(issue.stage) + '</td>\
@@ -64,6 +71,15 @@ function getIssues() {
                    </tr>';
             });
             $('.table tbody').html(rows);
+            //console.log('Heere');
+            
+            listIssuesTable =  $('.table').DataTable({
+                "columnDefs": [ {
+                    "targets": 5,
+                    "searchable": false,
+                    "orderable": false
+                  } ]
+            });
         },
         error: function (response) {
             console.log(response);
@@ -117,13 +133,24 @@ $(document).ready(function () {
     // Init Multi select inputs
     $('.fastsearch').select2();
 
+    // destroy and Initial table with datatable if it is initialized
+    if(listIssuesTable){
+        listIssuesTable.destroy();
+    }
+    listIssuesTable =  $('.table').DataTable({
+        "columnDefs": [ {
+            "targets": 5,
+            "searchable": false,
+            "orderable": false
+          } ]
+    });
 
     // Button fix pop up a modal on which stage the issue in
     $('body').on('click', '.btn-fix', function () {
 
         id = $(this).data('id'); // get id of the issue
         stage = $(this).data('stage'); // get stage of the issue
-        var imei = $(this).parent().parent().parent().children().eq(1).text(); // get selected imei from table
+        var imei = $('#row'+id).children().eq(1).text(); // get selected imei from table
         $('#update-to-stage-' + (stage + 1)).modal('toggle'); // toggle modal based on stage of the issue
         $('#update_imei').val(imei); // assign the imei to update_imei input (modal in stage 2) 
 
@@ -178,6 +205,15 @@ $(document).ready(function () {
 
         var diagnostic = $(this).text(); // Type of the problem (software or hadware)
         $('.client-permission').hide();
+
+        console.log(imei);
+        $('.input-imei-stage-3').val(imei);
+        if(imei == "999999999999999"){
+            $('.input-imei-stage-3').attr('disabled',false);
+        }else{
+            $('.input-imei-stage-3').attr('disabled',true);
+        }
+        
         if (diagnostic == "Hardware") {
             $('#hardware').show();
             $('#software').hide();
@@ -238,4 +274,17 @@ $(document).ready(function () {
     $('#update-to-stage-2').on('hidden.bs.modal', function (e) {
         $('#update-frm-to-stage-2 :input').val('');
     });
+
+    /**
+     * 
+     * Using this method when we use dropdown button or normale dropdown
+     * on table that is using datatable
+     */
+    $('.table').on('show.bs.dropdown', function () {
+        $('.table').css( "overflow", "inherit" );
+    });
+   
+    $('.table').on('hide.bs.dropdown', function () {
+            $('.table').css( "overflow", "auto" );
+    })
 });

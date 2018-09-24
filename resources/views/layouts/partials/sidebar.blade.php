@@ -1,11 +1,11 @@
 <div class="sidebar sidebar-dark bg-dark">
     <ul class="list-unstyled">
-        <li><a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt"></i> dashboard</a></li>
+        <li><a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="{{ route('issues.create') }}"><i class="fas fa-ticket-alt"></i> Open issue</a></li>
-        <li><a href="{{ route('issues.index') }}"><i class="far fa-list-alt"></i> Liste issues</a></li>
         
         @if(auth()->user()->isAdmin() || auth()->user()->isSav())
         
+        <li><a href="{{ route('issues.index') }}"><i class="far fa-list-alt"></i> Liste issues</a></li>
         <li><a href="{{ route('problems.index') }}"><i class="fas fa-list-ul"></i> Problems</a></li>
         <li><a href="{{ route('solutions.index') }}"><i class="fas fa-list-ul"></i> Solutions</a></li>
         @endif

@@ -6,6 +6,7 @@
             <h5 class="card-header text-center text-uppercase">Insert new Commercial</h5>
             <form action="" method="post" id="add-frm-commercial">
                 <div class="card-body">
+                    @csrf
                     <div class="form-group">
                         <label for="full_name" >Full Name</label>
                         <input type="text" class="form-control" id="full_name" name="full_name" required> 

@@ -9,16 +9,15 @@
         </div>
         <form action="" method="post" id="update-frm-commercial">
             <div class="modal-body">
-                
-                    <div class="form-group">
-                        <label for="full_name">Full Name</label>
-                        <input type="text" class="form-control" id="update_full_name" name="full_name" required> 
-                    </div>
-                    <div class="form-group">
-                        <label for="phone" >Phone</label>
-                        <input type="text" class="form-control" id="update_phone" name="phone" required> 
-                    </div>
-                
+                @csrf
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" class="form-control" id="update_full_name" name="full_name" required> 
+                </div>
+                <div class="form-group">
+                    <label for="phone" >Phone</label>
+                    <input type="text" class="form-control" id="update_phone" name="phone" required> 
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

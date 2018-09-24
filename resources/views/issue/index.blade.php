@@ -28,9 +28,9 @@
                     </thead>
                     <tbody>
                         @forelse($issues as $issue)
-                        <tr>
+                        <tr id="row{{ $issue->id }}">
                             <th scope="row">{{ $loop->iteration }}</th>
-                            <td>{{ $issue->imei ?? 'UNKOWN' }}</td>
+                            <td>{{ $issue->imei ?? '999999999999999' }}</td>
                             <td>{{ $issue->commercial->full_name }}</td>
                             <td>{{ $issue->user->name ?? 'Not Assigned' }}</td>
                             <td>{!! $issue->stage() !!}</td>

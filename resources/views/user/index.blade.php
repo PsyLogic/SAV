@@ -88,4 +88,4 @@
 
 @section('js')
 <script src="{{ asset('js/app/users.js') }}"></script>
-@stopq
+@stop

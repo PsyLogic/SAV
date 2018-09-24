@@ -9,16 +9,20 @@
                     @csrf
                     <div class="form-group">
                         <label for="imei" >IMEI</label>
-                        <input type="text" class="form-control" id="imei" name="imei" autocomplete="off" placeholder="999999999999999"> 
+                        <input type="text" class="form-control" id="imei" name="imei" autocomplete="off" value="999999999999999"> 
                     </div>
                     <div class="form-group">
-                        <label for="username" >Commercial Agent</label>
+                        <label for="commercial_id" >Commercial Agent</label>
                         <select class="form-control" name="commercial_id" id="commercial_id" required>
                             <option value=""></option>
                             @foreach($commercials as $commercial)
                             <option value="{{ $commercial->id }}">{{ $commercial->full_name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="received_at" >Received date:</label>
+                        <input type="date" class="form-control" id="received_at" name="received_at" autocomplete="off" required> 
                     </div>
                 </div>
                 <div class="card-footer clearfix">

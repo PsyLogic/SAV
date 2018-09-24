@@ -39,10 +39,12 @@
                     <h3 class="text-center text-uppercase">SOFTWARE</h3>
                     <form action="" method="POST" id="update-frm-software" enctype="multipart/form-data" >
                         <input type="hidden" name="diagnostic" value="software">
-                        {{-- <div class="form-group">
-                            <label for="extra_problem_software">Extra Problems</label>
-                            <input type="text" class="form-control" id="extra_problem_software" name="extra_problem"> 
-                        </div> --}}
+                        
+                        <div class="form-group">
+                            <label for="imei-stage-3">IMEI</label>
+                            <input type="text" class="form-control input-imei-stage-3"  name="imei_stage_3"> 
+                        </div>
+                        
                         <div class="form-group">
                             <label for="solution_software">Solution</label>
                             <select name="solution[]" id="solution_software" class="fastsearch form-control" style="width: 100%" multiple required>
@@ -73,6 +75,10 @@
                     <h3 class="text-center text-uppercase">hardware</h3>
                     <form action="" method="POST" id="update-frm-hardware" enctype="multipart/form-data" >
                         <input type="hidden" name="diagnostic" value="hardware">
+                        <div class="form-group">
+                            <label for="imei-stage-3">IMEI</label>
+                            <input type="text" class="form-control input-imei-stage-3" name="imei_stage_3"> 
+                        </div>
                         <div class="form-group">
                             <label for="problem_hardware">Problem</label>
                             <select class="fastsearch form-control" style="width: 100%" name="problems[]" id="problem_hardware" multiple required>
