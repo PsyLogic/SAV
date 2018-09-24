@@ -382,7 +382,7 @@ class IssueController extends Controller
     }
 
     private function verifyIMEI($imei){
-        $endpoint = "http://154.70.200.106:8004/api/getinfo";
+        $endpoint = "http://154.70.200.106:8003/api/getinfo";
         $client = new  \GuzzleHttp\Client();
         $options = [ 'query' => ['imei' => $imei] ];
         
