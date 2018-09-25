@@ -10,7 +10,7 @@ class CommercialController extends Controller
 
     public function __construct()
     {   
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -43,6 +43,7 @@ class CommercialController extends Controller
             $commcercial = Commercial::create($request->all());
             return response()->json($commcercial);
         }
+        
         abort(403);
     }
 

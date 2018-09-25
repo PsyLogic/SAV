@@ -92,6 +92,7 @@ function getIssues() {
 function updateToStage3(formId) {
     // Sumbit the form of stage 3
     var formData = new FormData($('#' + formId)[0]);
+    console.log(formData);
     $.ajax({
         type: 'POST',
         url: url_issue + '/final-step/' + id,
@@ -209,9 +210,9 @@ $(document).ready(function () {
         console.log(imei);
         $('.input-imei-stage-3').val(imei);
         if(imei == "999999999999999"){
-            $('.input-imei-stage-3').attr('disabled',false);
+            $('.input-imei-stage-3').removeAttr('readonly');
         }else{
-            $('.input-imei-stage-3').attr('disabled',true);
+            $('.input-imei-stage-3').attr('readonly','readonly');
         }
         
         if (diagnostic == "Hardware") {

@@ -23,7 +23,7 @@
                         <label for="type" >Type</label>
                         <select class="form-control" name="type" id="type" required>
                             <option value=""></option>
-                            <option value="Admin">SAV</option>
+                            <option value="Admin">Admin</option>
                             <option value="SAV">SAV</option>
                             <option value="Commercial">Commercial Responsable</option>
                         </select>

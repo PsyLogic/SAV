@@ -42,7 +42,7 @@
                         
                         <div class="form-group">
                             <label for="imei-stage-3">IMEI</label>
-                            <input type="text" class="form-control input-imei-stage-3"  name="imei_stage_3"> 
+                            <input type="text" class="form-control input-imei-stage-3" id="" name="imei_stage_3"> 
                         </div>
                         
                         <div class="form-group">
