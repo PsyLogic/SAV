@@ -38,6 +38,7 @@ class CommercialController extends Controller
             $this->validate($request, [
                 'full_name' => 'required|max:100',
                 'phone' => 'required',
+                'belong_to' => 'required',
             ]);
             
             $commcercial = Commercial::create($request->all());
@@ -76,12 +77,14 @@ class CommercialController extends Controller
             $this->validate($request, [
                 'full_name' => 'required|max:100',
                 'phone' => 'required',
+                'belong_to' => 'required',
             ]);
             
             $commcercial = Commercial::findOrFail($id);
            
             $commcercial->full_name = $request->full_name;
             $commcercial->phone = $request->phone;
+            $commcercial->belong_to = $request->belong_to;
 
             return response()->json($commcercial->saveOrFail());
         }

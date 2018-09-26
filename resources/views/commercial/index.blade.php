@@ -15,6 +15,16 @@
                         <label for="phone" >Phone</label>
                         <input type="text" class="form-control" id="phone" name="phone" required> 
                     </div>
+                    <div class="form-group">
+                        <label for="type" >Belong To</label>
+                        <select class="form-control" name="belong_to" id="update_belong_to">
+                            <option value="FNAC">FNAC</option>
+                            <option value="ORANGE">ORANGE</option>
+                            <option value="JUMIA">JUMIA</option>
+                            <option value="STG TELECOM">STG TELECOM</option>
+                            <option value="Traditionelle">Traditionelle</option>
+                        </select> 
+                    </div>
                 </div>
                 <div class="card-footer clearfix">
                     <button type="submit" class="btn btn-primary float-right"><i class="far fa-plus-square"></i> Add</button>
@@ -32,6 +42,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Full Name</th>
                         <th scope="col">Phone</th>
+                        <th scope="col">Belong To</th>
                         <th scope="col" class="text-center">Actions</th>
                       </tr>
                     </thead>
@@ -41,6 +52,7 @@
                             <th scope="row">{{ $loop->iteration }}</th>
                             <td>{{$commercial->full_name}}</td>
                             <td>{{$commercial->phone}}</td>
+                            <td>{{$commercial->belong_to}}</td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-danger" data-id="{{$commercial->id}}" title="Delete"><i class="fa fa-times"></i></button>
                                 <button type="button" class="btn btn-info" data-id="{{$commercial->id}}" title="Edit"><i class="far fa-edit"></i></button>

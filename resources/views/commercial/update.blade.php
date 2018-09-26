@@ -18,6 +18,16 @@
                     <label for="phone" >Phone</label>
                     <input type="text" class="form-control" id="update_phone" name="phone" required> 
                 </div>
+                <div class="form-group">
+                    <label for="update_belong_to" >Belong To</label>
+                    <select class="form-control" name="belong_to" id="update_belong_to">
+                        <option value="FNAC">FNAC</option>
+                        <option value="ORANGE">ORANGE</option>
+                        <option value="JUMIA">JUMIA</option>
+                        <option value="STG TELECOM">STG TELECOM</option>
+                        <option value="Traditionelle">Traditionelle</option>
+                    </select> 
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

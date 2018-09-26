@@ -23,6 +23,7 @@ function getCommercials() {
                        <th scope="row">' + (i + 1) + '</th>\
                        <td>' + commercial.full_name + '</td>\
                        <td>' + commercial.phone + '</td>\
+                       <td>' + commercial.belong_to + '</td>\
                        <td>\
                        <button type="button" class="btn btn-danger" data-id="' + commercial.id + '" title="Delete"><i class="fa fa-times"></i></button>\
                        <button type="button" class="btn btn-info" data-id="' + commercial.id + '" title="Edit"><i class="far fa-edit"></i></button>\
@@ -84,6 +85,7 @@ $(document).ready(function () {
             success: function (commercial) {
                 $('#update-frm-commercial #update_full_name').val(commercial.full_name);
                 $('#update-frm-commercial #update_phone').val(commercial.phone);
+                $('#update-frm-commercial #update_belong_to').val(commercial.belong_to);
                 $('#update-commercial').modal('toggle');
             },
             error: function (response) {
