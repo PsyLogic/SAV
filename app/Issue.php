@@ -43,10 +43,6 @@ class Issue extends Model
      */
     protected $casts = [
         'client' => 'array',
-        'delivered_at' => 'date:d-m-Y',
-        'received_at' => 'date:d-m-Y',
-        'closed_at' => 'date:d-m-Y',
-        'deleted_at' => 'date:d-m-Y',
     ];
     
     public function stage(){
@@ -77,6 +73,16 @@ class Issue extends Model
 
     public function french_format($date){
         return Carbon::parse($date)->format('d-m-Y');
+    }
+
+    public function getDeliveredAtAttribute($value){
+        return Carbon::parse($value)->format('d-m-Y');
+    }
+    public function getReceivedAtAttribute($value){
+        return Carbon::parse($value)->format('d-m-Y');
+    }
+    public function getClosedAtAttribute($value){
+        return Carbon::parse($value)->format('d-m-Y');
     }
 
     public function imagesBefore(){
