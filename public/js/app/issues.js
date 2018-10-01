@@ -53,11 +53,14 @@ function getIssues() {
             $.each(data, function (i, issue) {
                 rows += '\
                    <tr id="row'+issue.id+'">\
-                       <th scope="row">' + (parseInt(i) + 1) + '</th>\
                        <td>' + (issue.imei || "999999999999999") + '</td>\
-                       <td>' + issue.commercial.full_name + '</td>\
+                       <td>' + issue.client["full_name"] + '\
+                       <a tabindex="0" class="btn btn-sm " role="button" data-toggle="tooltip" data-placement="right" title="'+issue.client["tel"]+'"><i class="fas fa-info-circle"></i></a></td>\
+                       <td>' + issue.commercial.full_name + '\
+                       <a tabindex="0" class="btn btn-sm " role="button" data-toggle="tooltip" data-placement="right" title="'+issue.commercial.phone+'"><i class="fas fa-info-circle"></i></a></td>\
                        <td>' + (issue.user ? issue.user.name : "Not Assigned") + '</td>\
                        <td>' + stageProcess(issue.stage) + '</td>\
+                       <td>' + issue.delivered_at + '</td>\
                        <td>\
                            <div class="btn-group">';
                 if (issue.stage == 1)
@@ -84,7 +87,7 @@ function getIssues() {
             
             listIssuesTable =  $('.table').DataTable({
                 "columnDefs": [ {
-                    "targets": 5,
+                    "targets": 6,
                     "searchable": false,
                     "orderable": false
                   } ]
@@ -153,7 +156,7 @@ $(document).ready(function () {
     }
     listIssuesTable =  $('.table').DataTable({
         "columnDefs": [ {
-            "targets": 5,
+            "targets": 6,
             "searchable": false,
             "orderable": false
           } ]
@@ -164,7 +167,7 @@ $(document).ready(function () {
 
         id = $(this).data('id'); // get id of the issue
         stage = $(this).data('stage'); // get stage of the issue
-        var imei = $('#row'+id).children().eq(1).text(); // get selected imei from table
+        var imei = $('#row'+id).children().eq(0).text(); // get selected imei from table
         $('#update-to-stage-' + (stage + 1)).modal('toggle'); // toggle modal based on stage of the issue
         $('#update_imei').val(imei); // assign the imei to update_imei input (modal in stage 2) 
 

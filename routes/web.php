@@ -11,9 +11,12 @@
 |
 */
 
-Route::get('/test',function(){
-    phpinfo();
-});
+// Route::get('/test',function(){
+//     $pathInfo = pathinfo("C:/wamp64/www/SAV/public/storage/2018-10-02/6/1535458406456.jpg"); 
+//     if( !\File::exists( $pathInfo['dirname'] ) ) {
+//         \File::makeDirectory( $pathInfo['dirname'], 0755, true ); 
+//     }
+// });
 
 
 Route::group(['middleware' => ['auth']], function () {

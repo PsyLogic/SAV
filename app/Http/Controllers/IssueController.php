@@ -26,7 +26,7 @@ class IssueController extends Controller
      */
     public function index(Request $request)
     {
-        $issues = Issue::with(['commercial:id,full_name','user:id,name'])->get();
+        $issues = Issue::with(['commercial','user:id,name'])->get();
         if($request->ajax()){
             // $issues = $issues->map(function($item){
             //     $item->stage = $item->stage($item->stage);
@@ -128,12 +128,12 @@ class IssueController extends Controller
             
             if($request->hasFile('images')){
                 foreach($images as $image){
-
                     $fileName = time().'.'.$image->getClientOriginalExtension();
+                    $fullPath = $path.$fileName;
+                    $this->checkDirectory($fullPath);
                     $saved = ImageHandler::make($image)
                     ->resize(600, 500)
-                    ->save($path.$fileName);
-
+                    ->save($fullPath);
                     if($saved){
                         $newImage = new Image();
                         $newImage->file_name = $folder.$fileName;
@@ -203,15 +203,16 @@ class IssueController extends Controller
                 $today = Carbon::now();
                 $folder = $today->format('Y-m-d').'/'.$id.'/';
                 $path = public_path('storage').'/'.$folder;
-                
 
                 if($request->hasFile('images')){
 
                     foreach($images as $image){
                         $fileName = time().'.'.$image->getClientOriginalExtension();
+                        $fullPath = $path.$fileName;
+                        $this->checkDirectory($fullPath);
                         $saved = ImageHandler::make($image)
                         ->resize(600, 500)
-                        ->save($path.$fileName);
+                        ->save($fullPath);
                         if($saved){
                             $newImage = new Image();
                             $newImage->file_name = $folder.$fileName;
@@ -270,9 +271,11 @@ class IssueController extends Controller
 
                     foreach($images as $image){
                         $fileName = time().'.'.$image->getClientOriginalExtension();
+                        $fullPath = $path.$fileName;
+                        $this->checkDirectory($fullPath);
                         $saved = ImageHandler::make($image)
                         ->resize(600, 500)
-                        ->save($path.$fileName);
+                        ->save($fullPath);
                         if($saved){
                             $newImage = new Image();
                             $newImage->file_name = $folder.$fileName;
@@ -439,5 +442,12 @@ class IssueController extends Controller
             $content = $content['data'];
         }
         return ['code'=>$statusCode,'content'=>$content];
+    }
+
+    private function checkDirectory(string $path){
+        $pathInfo = pathinfo($path); 
+        if( !\File::exists( $pathInfo['dirname'] ) ) {
+            \File::makeDirectory( $pathInfo['dirname'], 0755, true ); 
+        }
     }
 }

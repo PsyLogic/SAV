@@ -13,27 +13,39 @@
 <div class="row justify-content-center">
     <div class="col-12">
         <div class="card">
-            <h5 class="card-header text-center text-uppercase">List of request reparations</h5>
+            <h5 class="card-header text-center text-uppercase clearfix">
+                <span class="badge badge-pill badge-info" style="float:left !important;">Total: {{ count($issues) }}</span>
+                List of request reparations
+            </h5>
             <div class="card-body">
                 <table class="table">
                     <thead class="thead-dark">
                       <tr>
-                        <th scope="col">#</th>
                         <th scope="col">IMEI</th>
+                        <th scope="col">Owner</th>
                         <th scope="col">Commercial Agent</th>
                         <th scope="col">SAV Agent</th>
                         <th scope="col">Request</th>
+                        <th scope="col">Created at</th>
                         <th scope="col">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                         @forelse($issues as $issue)
                         <tr id="row{{ $issue->id }}">
-                            <th scope="row">{{ $loop->iteration }}</th>
-                            <td>{{ $issue->imei ?? '999999999999999' }}</td>
-                            <td>{{ $issue->commercial->full_name }}</td>
+                            {{-- <th scope="row">{{ $loop->iteration }}</th> --}}
+                            <td scope="row">{{ $issue->imei ?? '999999999999999' }}</td>
+                            <td>
+                                {{ $issue->client['full_name'] }}
+                                <a tabindex="0" class="btn btn-sm " role="button" data-toggle="tooltip" data-placement="right" title="{{ $issue->client['tel'] }}"><i class="fas fa-info-circle"></i></a>
+                            </td>
+                            <td>
+                                {{ $issue->commercial->full_name }}
+                                <a tabindex="0" class="btn btn-sm " role="button" data-toggle="tooltip" data-placement="right" title="{{ $issue->commercial->phone }}"><i class="fas fa-info-circle"></i></a>
+                            </td>
                             <td>{{ $issue->user->name ?? 'Not Assigned' }}</td>
                             <td>{!! $issue->stage() !!}</td>
+                            <td>{{ $issue->delivered_at }}</td>
                             <td>
                                 <div class="btn-group">
                                     @if ($issue->stage == 1)

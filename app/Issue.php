@@ -28,7 +28,7 @@ class Issue extends Model
         'closed_at',
         'deleted_at'
     ];
-
+    
     /**
      * remove created_at and updated_at from table
      *
@@ -43,6 +43,10 @@ class Issue extends Model
      */
     protected $casts = [
         'client' => 'array',
+        'delivered_at' => 'date:d-m-Y',
+        'received_at' => 'date:d-m-Y',
+        'closed_at' => 'date:d-m-Y',
+        'deleted_at' => 'date:d-m-Y',
     ];
     
     public function stage(){
