@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Issue;
-use Illuminate\Http\Request;
-use App\Commercial;
-use Illuminate\Support\Facades\Validator;
-use App\Image;
-use Carbon\Carbon;
+use PDF;
 use Auth;
+use App\Image;
+use App\Issue;
 use App\Problem;
 use App\Solution;
-use PDF;
+use Carbon\Carbon;
+use App\Commercial;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+// use Image as ImageHandler;
+use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image as ImageHandler;
+use Illuminate\Support\Facades\Storage;
 
 class IssueController extends Controller
 {
@@ -101,15 +105,15 @@ class IssueController extends Controller
     public function update(Request $request, $id)
     {
         if($request->ajax()){
-           
+
             // Validate Request data
             $this->validate($request,[
                 'imei' => 'required|between:15,15',
-                'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+                'images.*' => 'required|image|mimes:jpg,jpeg,png|max:6144'
             ]);
             
             $imei = $request->imei;
-            $images = $request->file('images');
+            $images = Input::file('images');
             $today = Carbon::now();
 
             // Check IMEI if exists before sumbit anything
@@ -118,15 +122,21 @@ class IssueController extends Controller
                 return response()->json($client,404);
            
             // Upload init Images of phone 
-            $path = $today->format('Y-m-d').'/'.$id;
+            $folder = $today->format('Y-m-d').'/'.$id.'/';
+            $path = public_path('storage').'/'.$folder;
             $errors = "";
             
             if($request->hasFile('images')){
                 foreach($images as $image){
-                    $storePath = $image->store($path);
-                    if($storePath){
+
+                    $fileName = time().'.'.$image->getClientOriginalExtension();
+                    $saved = ImageHandler::make($image)
+                    ->resize(600, 500)
+                    ->save($path.$fileName);
+
+                    if($saved){
                         $newImage = new Image();
-                        $newImage->file_name = $storePath;
+                        $newImage->file_name = $folder.$fileName;
                         $newImage->issue_id = $id;
                         $newImage->status = "before";
 
@@ -170,7 +180,7 @@ class IssueController extends Controller
 
             $issue = Issue::findOrFail($id);
             $diagnostic = $request->diagnostic;
-            $images = $request->file('images');
+            $images = Input::file('images');
             $errors = "";
             
 
@@ -184,23 +194,27 @@ class IssueController extends Controller
             if($diagnostic == 'software'){
                 $this->validate($request,[
                     'solution' => 'required',
-                    'images.*' => 'image|mimes:jpg,jpeg,png|max:2048'
+                    'images.*' => 'image|mimes:jpg,jpeg,png|max:6144'
                 ]);
 
                 
 
                 // Upload init Images of phone 
                 $today = Carbon::now();
-                $path = $today->format('Y-m-d').'/'.$id;
+                $folder = $today->format('Y-m-d').'/'.$id.'/';
+                $path = public_path('storage').'/'.$folder;
                 
 
                 if($request->hasFile('images')){
 
                     foreach($images as $image){
-                        $storePath = $image->store($path);
-                        if($storePath){
+                        $fileName = time().'.'.$image->getClientOriginalExtension();
+                        $saved = ImageHandler::make($image)
+                        ->resize(600, 500)
+                        ->save($path.$fileName);
+                        if($saved){
                             $newImage = new Image();
-                            $newImage->file_name = $storePath;
+                            $newImage->file_name = $folder.$fileName;
                             $newImage->issue_id = $id;
                             $newImage->status = "after";
     
@@ -243,21 +257,25 @@ class IssueController extends Controller
                 
                 $this->validate($request,[
                     'solution' => 'required',
-                    'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+                    'images.*' => 'required|image|mimes:jpg,jpeg,png|max:6144'
                 ]);
 
                 // Upload init Images of phone 
                 $today = Carbon::now();
-                $path = $today->format('Y-m-d').'/'.$id;
+                $folder = $today->format('Y-m-d').'/'.$id.'/';
+                $path = public_path('storage').'/'.$folder;
                 $errors = "";
 
                 if($request->hasFile('images')){
 
                     foreach($images as $image){
-                        $storePath = $image->store($path);
-                        if($storePath){
+                        $fileName = time().'.'.$image->getClientOriginalExtension();
+                        $saved = ImageHandler::make($image)
+                        ->resize(600, 500)
+                        ->save($path.$fileName);
+                        if($saved){
                             $newImage = new Image();
-                            $newImage->file_name = $storePath;
+                            $newImage->file_name = $folder.$fileName;
                             $newImage->issue_id = $id;
                             $newImage->status = "after";
     

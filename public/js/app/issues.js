@@ -24,6 +24,15 @@ function stageProcess(stage) {
 }
 
 
+function ableLoading(element,html='<i class="fas fa-spinner fa-spin"></i>'){
+    element.html(html);
+    element.prop('disabled',true);
+}
+function disableLoading(element, html='<i class="far fa-edit"></i> Update'){
+    element.html(html);
+    element.prop('disabled',false);
+}
+
 
 /**
  *  @returns list of issues 
@@ -90,9 +99,11 @@ function getIssues() {
 
 
 function updateToStage3(formId) {
+    ableLoading($('.btn-submit'));
+
     // Sumbit the form of stage 3
     var formData = new FormData($('#' + formId)[0]);
-    console.log(formData);
+    // console.log(formData);
     $.ajax({
         type: 'POST',
         url: url_issue + '/final-step/' + id,
@@ -106,7 +117,8 @@ function updateToStage3(formId) {
             swal("Done", "The phone is fixed and the issue is closed, Thank you!", "success");
             getIssues();
             $('#' + formId + ' :input').val('');
-            $('#update-to-stage-' + (stage + 1)).modal('toggle')
+            $('#update-to-stage-' + (stage + 1)).modal('toggle');
+            ableLoading($('.btn-submit'));
         },
         error: function (response) {
             console.log(response);
@@ -124,6 +136,7 @@ function updateToStage3(formId) {
                     "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
             }
             swal("Error", errors, "error");
+            disableLoading($('.btn-submit'));
         }
     });
 
@@ -160,10 +173,12 @@ $(document).ready(function () {
             e.preventDefault();
             e.stopImmediatePropagation();
 
+            
             if (isNaN($('#update_imei').val()) || ($('#update_imei').val() != '' && $('#update_imei').val().length != 15)) {
                 alert('IMEI must be a valid of 15 number');
                 return;
             }
+            ableLoading($('.btn-submit'));
 
             var formData = new FormData($(this)[0]);
             $.ajax({
@@ -179,7 +194,8 @@ $(document).ready(function () {
                     swal("Done", "Reparation request is in process right now", "success");
                     getIssues();
                     $('#update-frm-to-stage-2 :input').val('');
-                    $('#update-to-stage-' + (stage + 1)).modal('toggle')
+                    $('#update-to-stage-' + (stage + 1)).modal('toggle');
+                    disableLoading($('.btn-submit'))
                 },
                 error: function (response) {
                     console.log(response);
@@ -197,6 +213,7 @@ $(document).ready(function () {
                             "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
                     }
                     swal("Error", errors, "error");
+                    disableLoading($('.btn-submit'))
                 }
 
             });

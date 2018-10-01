@@ -14,11 +14,14 @@
                 <div class="form-group">
                     <label for="update_images" >Images</label>
                     <input type="file" class="form-control" id="update_images" name="images[]" accept=".png, .jpg, .jpeg" multiple required> 
+                    <small class="form-text text-muted">
+                        Max Upload File (6 MB), Allowed Extentions: .png, .jpg, .jpeg
+                    </small> 
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-success float-right"><i class="far fa-edit"></i> Update</button>
+                <button type="submit" class="btn btn-success float-right btn-submit"><i class="far fa-edit"></i> Update</button>
             </div>
         </form>
         </div>
@@ -60,11 +63,14 @@
                         </div>
                         <div class="form-group">
                             <label for="images_software" >Images</label>
-                            <input type="file" class="form-control" id="images_software" name="images[]" accept=".png, .jpg, .jpeg" multiple> 
+                            <input type="file" class="form-control" id="images_software" name="images[]" accept=".png, .jpg, .jpeg" multiple>
+                            <small class="form-text text-muted">
+                                Max Upload File (6 MB), Allowed Extentions: .png, .jpg, .jpeg
+                            </small> 
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-success float-right"><i class="far fa-edit"></i> Update</button>
+                            <button type="submit" class="btn btn-success float-right btn-submit"><i class="far fa-edit"></i> Update</button>
                         </div>
                     </form>    
                 </div>
@@ -133,10 +139,13 @@
                         <div class="form-group">
                             <label for="images_hardware" >Images</label>
                             <input type="file" class="form-control" id="images_hardware" name="images[]" accept=".png, .jpg, .jpeg" multiple required> 
+                            <small class="form-text text-muted">
+                                Max Upload File (6 MB), Allowed Extentions: .png, .jpg, .jpeg
+                            </small> 
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-success float-right"><i class="far fa-edit"></i> Update</button>
+                            <button type="submit" class="btn btn-success float-right btn-submit"><i class="far fa-edit"></i> Update</button>
                         </div>
                     </form>
                 </div>

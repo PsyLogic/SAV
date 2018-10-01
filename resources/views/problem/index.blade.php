@@ -1,4 +1,5 @@
 @extends('layouts.main')
+@section('title','Manage Problems Request')
 @section('content')
 <div class="row justify-content-center">
     <div class="col-4">

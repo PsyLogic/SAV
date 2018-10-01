@@ -11,6 +11,11 @@
 |
 */
 
+Route::get('/test',function(){
+    phpinfo();
+});
+
+
 Route::group(['middleware' => ['auth']], function () {
     
     Route::get('/', function () {

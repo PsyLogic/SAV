@@ -1,4 +1,5 @@
 @extends('layouts.main')
+@section('title','Timeline of Request')
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/app/issue_details.css')}}">
 <link rel="stylesheet" href="{{ asset('css/popup.css')}}">
