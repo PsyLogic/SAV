@@ -214,11 +214,11 @@
                         <tbody>
                             <tr>
                                 <th>Livré à:</th>
-                                <td>{{ $issue->delivered_at->format('d/m/Y') }}</td>
+                                <td>{{ $issue->delivered_at }}</td>
                             </tr>
                             <tr>
                                 <th>Reçu à:</th>
-                                <td>{{ $issue->received_at->format('d/m/Y') }}</td>
+                                <td>{{ $issue->received_at }}</td>
                             </tr>
                         </tbody>
                     </table>

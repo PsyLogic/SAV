@@ -11,7 +11,7 @@
             {{-- Stage 1 --}}
             <div class="timeline">
                 <span class="timeline-icon"></span>
-                <span class="year">{{ $issue->french_format($issue->delivered_at) }}</span>
+                <span class="year">{{ $issue->delivered_at }}</span>
                 <div class="timeline-content">
                     <span class="icon far fa-envelope"></span> 
                     <h3 class="title">Issue Delivered</h3>
@@ -33,7 +33,7 @@
             @if($issue->stage > 1)
             <div class="timeline">
                 <span class="timeline-icon"></span>
-                <span class="year">{{$issue->french_format($issue->received_at)}}</span>
+                <span class="year">{{$issue->received_at}}</span>
                 <div class="timeline-content">
                     <span class="icon far fa-envelope-open"></span>
                     <h3 class="title">Issue Received</h3>
@@ -70,7 +70,7 @@
             @if($issue->stage == 3)
             <div class="timeline">
                 <span class="timeline-icon"></span>
-                <span class="year">{{$issue->french_format($issue->closed_at)}}</span>
+                <span class="year">{{$issue->closed_at }}</span>
                 <div class="timeline-content">
                         <span class="icon fas fa-wrench"></span> 
                     <h3 class="title">Issue Resolved</h3>
