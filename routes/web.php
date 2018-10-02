@@ -12,7 +12,6 @@
 */
 
 
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
 Route::group(['middleware' => ['auth']], function () {
     
@@ -27,7 +26,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('/commercials', 'CommercialController');
         Route::resource('/users', 'UserController');
         Route::put('/users/password/{id}', 'UserController@updatePassword')->name('users.changePassword');
-        
+        Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
     });
 
     Route::group(['middleware' => ['sav']], function () {
