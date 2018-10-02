@@ -3,8 +3,18 @@
  * 
  */
 var url_problem = "/problems"
-
+var problems_table= null;
 var id = null;
+
+
+function initDataTable(){
+    // destroy and Initial table with datatable if it is initialized
+    if(problems_table){
+        problems_table.destroy();
+    }
+    problems_table =  $('.table').DataTable();
+}
+
 
 /**
  *  Return list of Problems 
@@ -33,6 +43,8 @@ function getProblems() {
                    ';
             });
             $('.table tbody').html(rows);
+
+            initDataTable();
         },
         error: function (response) {
             console.log(response);
@@ -42,6 +54,7 @@ function getProblems() {
 
 $(document).ready(function () {
 
+    initDataTable();
     // Insert new Commercial
     $('#add-frm-problem').submit(function (e) {
         e.preventDefault();

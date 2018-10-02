@@ -3,8 +3,16 @@
  * 
  */
 var url_commercial = "/commercials"
-
+var commercials_table = null;
 var id = null;
+
+function initDataTable(){
+    // destroy and Initial table with datatable if it is initialized
+    if(commercials_table){
+        commercials_table.destroy();
+    }
+    commercials_table =  $('.table').DataTable();
+}
 
 /**
  *  Return list of commercials 
@@ -32,6 +40,7 @@ function getCommercials() {
                    ';
             });
             $('.table tbody').html(rows);
+            initDataTable();
         },
         error: function (response) {
             console.log(response);
@@ -41,6 +50,8 @@ function getCommercials() {
 
 $(document).ready(function () {
 
+    initDataTable();
+    
     // Insert new Commercial
     $('#add-frm-commercial').submit(function (e) {
         e.preventDefault();

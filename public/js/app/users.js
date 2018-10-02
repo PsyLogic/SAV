@@ -3,8 +3,17 @@
  * 
  */
 var url_user = "/users"
-
+var users_table = null;
 var id = null;
+
+function initDataTable(){
+    // destroy and Initial table with datatable if it is initialized
+    if(users_table){
+        users_table.destroy();
+    }
+    users_table =  $('.table').DataTable();
+}
+
 
 /**
  *  Return list of users 
@@ -33,6 +42,7 @@ function getUsers() {
                     ';
             });
             $('.table tbody').html(rows);
+            initDataTable();
         },
         error: function (response) {
             console.log(response);
@@ -42,6 +52,7 @@ function getUsers() {
 
 $(document).ready(function () {
 
+    initDataTable();
     // Insert new Commercial
     $('#add-frm-user').submit(function (e) {
         e.preventDefault();

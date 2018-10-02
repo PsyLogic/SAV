@@ -3,8 +3,17 @@
  * 
  */
 var url_solution = "/solutions"
-
+var solution_table = null;
 var id = null;
+
+function initDataTable(){
+    // destroy and Initial table with datatable if it is initialized
+    if(solution_table){
+        solution_table.destroy();
+    }
+    solution_table =  $('.table').DataTable();
+}
+
 
 /**
  *  Return list of Solutions 
@@ -30,6 +39,7 @@ function getSolutions() {
                    ';
             });
             $('.table tbody').html(rows);
+            initDataTable();
         },
         error: function (response) {
             console.log(response);
@@ -39,6 +49,7 @@ function getSolutions() {
 
 $(document).ready(function () {
 
+    initDataTable();
     // Insert new Solution
     $('#add-frm-solution').submit(function (e) {
         e.preventDefault();

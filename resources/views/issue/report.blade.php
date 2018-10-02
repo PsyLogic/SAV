@@ -168,7 +168,7 @@
                     <table>
                         <tbody>
                             <tr>
-                                <th>Full name:</th>
+                                <th>Nom:</th>
                                 <td>{{ $issue->commercial->full_name }}</td>
                             </tr>
                             <tr>
