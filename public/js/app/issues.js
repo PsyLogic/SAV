@@ -194,7 +194,7 @@ $(document).ready(function () {
 
         id = $(this).data('id'); // get id of the issue
         stage = $(this).data('stage'); // get stage of the issue
-        var imei = $('#row'+id).children().eq(0).text(); // get selected imei from table
+        var imei = $('#row'+id).children().eq(1).text(); // get selected imei from table
         $('#update-to-stage-' + (stage + 1)).modal('toggle'); // toggle modal based on stage of the issue
         $('#update_imei').val(imei); // assign the imei to update_imei input (modal in stage 2) 
 
