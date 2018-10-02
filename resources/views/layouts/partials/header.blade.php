@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }} - @yield('title','No Title')</title>
+    <title>SAV - @yield('title')</title>
 
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/x-icon" />

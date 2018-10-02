@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <div class="card-footer clearfix">
-                    <button type="submit" class="btn btn-primary float-right"><i class="far fa-plus-square"></i> Add</button>
+                    <button type="submit" class="btn btn-primary float-right btn-submit"><i class="far fa-plus-square"></i> Add</button>
                 </div>
             </form>
         </div>
@@ -36,6 +36,15 @@
 
 @section('js')
 <script>
+    function ableLoading(element,html='<i class="fas fa-spinner fa-spin"></i>'){
+        element.html(html);
+        element.prop('disabled',true);
+    }
+    function disableLoading(element, html='<i class="far fa-plus-square"></i> Add'){
+        element.html(html);
+        element.prop('disabled',false);
+    }
+
     /**
      * URL of issue resources 
      * 
@@ -52,7 +61,8 @@
                 alert('IMEI must be a valid of 15 number');
                 return;
             }
-
+            
+            ableLoading($('.btn-submit'));
             var formData = $(this).serialize();
             
             $.ajax({
@@ -64,6 +74,7 @@
                     console.log(data);
                     swal("Done", "Reparation request is sent successfully", "success");
                     $('#add-frm-issue :input').val('');
+                    disableLoading($('.btn-submit'));
                 },
                 error: function(response){
                     console.log(response);
@@ -80,12 +91,10 @@
 
                     }
                     swal("Error", errors, "error");
+                    disableLoading($('.btn-submit'));
                 }
             });
-
         });
-
-
     });
 </script>
 @stop

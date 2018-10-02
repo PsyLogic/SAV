@@ -18,9 +18,18 @@
                 List of request reparations
             </h5>
             <div class="card-body">
+                {{-- <div class="form-group float-right">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Request</div>
+                        </div>
+                        <input type="text" class="form-control" id="stage-search-box" placeholder="Request">
+                    </div>
+                </div> --}}
                 <table class="table">
                     <thead class="thead-dark">
                       <tr>
+                        <th scope="col">Model</th>
                         <th scope="col">IMEI</th>
                         <th scope="col">Owner</th>
                         <th scope="col">Commercial Agent</th>
@@ -34,14 +43,15 @@
                         @forelse($issues as $issue)
                         <tr id="row{{ $issue->id }}">
                             {{-- <th scope="row">{{ $loop->iteration }}</th> --}}
-                            <td scope="row">{{ $issue->imei ?? '999999999999999' }}</td>
-                            <td>
-                                {{ $issue->client['full_name'] }}
-                                <a tabindex="0" class="btn btn-sm " role="button" data-toggle="tooltip" data-placement="right" title="{{ $issue->client['tel'] }}"><i class="fas fa-info-circle"></i></a>
+                            <td scope="row">{{ $issue->client['model'] }}</td>
+                            <td>{{ $issue->imei ?? '999999999999999' }}</td>
+                            <td >
+                                <span class="float-left">{{ $issue->client['full_name'] }}</span>
+                                <a tabindex="0" class="btn btn-sm float-right" role="button" data-toggle="tooltip" data-placement="right" title="{{ $issue->client['tel'] }}"><i class="fas fa-info-circle"></i></a>
                             </td>
                             <td>
-                                {{ $issue->commercial->full_name }}
-                                <a tabindex="0" class="btn btn-sm " role="button" data-toggle="tooltip" data-placement="right" title="{{ $issue->commercial->phone }}"><i class="fas fa-info-circle"></i></a>
+                                <span class="float-left">{{ $issue->commercial->full_name }}</span>
+                                <a tabindex="0" class="btn btn-sm float-right" role="button" data-toggle="tooltip" data-placement="right" title="{{ $issue->commercial->phone }}"><i class="fas fa-info-circle"></i></a>
                             </td>
                             <td>{{ $issue->user->name ?? 'Not Assigned' }}</td>
                             <td>{!! $issue->stage() !!}</td>

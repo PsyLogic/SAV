@@ -34,6 +34,45 @@ function disableLoading(element, html='<i class="far fa-edit"></i> Update'){
 }
 
 
+function initDataTable(){
+
+    // destroy and Initial table with datatable if it is initialized
+    if(listIssuesTable){
+        listIssuesTable.destroy();
+    }
+    
+    listIssuesTable =  $('.table').DataTable({
+        stateSave: true,
+        "columnDefs": [ {
+            "targets": [5,7],
+            // "searchable": false,
+            "orderable": false
+          } ],
+          initComplete: function () {
+  
+              var column = this.api().column(5);
+              console.log(column.header());
+              var select ='<select>\
+                            <optgroup label="Request">\
+                            <option value=""></option>\
+                            <option value="Open">Open</option>\
+                            <option value="IN PROCESS">IN PROCESS</option>\
+                            <option value="Closed">Closed</option>\
+                            </select>';
+              
+              $(select).appendTo( $(column.header()).empty() )
+                      .on( 'change', function () {
+                          var val = $.fn.dataTable.util.escapeRegex(
+                              $(this).val()
+                          );
+                          column
+                              .search( val ? '^'+val+'$' : '', true, false )
+                              .draw();
+                      });
+          }
+    });
+}
+
 /**
  *  @returns list of issues 
  * 
@@ -45,19 +84,16 @@ function getIssues() {
         dataType: 'json',
         success: function (data) {
 
-            if(listIssuesTable){
-                listIssuesTable.destroy();
-            }
-
             var rows = '';
             $.each(data, function (i, issue) {
                 rows += '\
                    <tr id="row'+issue.id+'">\
+                       <td>' + issue.client["model"] + '</td>\
                        <td>' + (issue.imei || "999999999999999") + '</td>\
-                       <td>' + issue.client["full_name"] + '\
-                       <a tabindex="0" class="btn btn-sm " role="button" data-toggle="tooltip" data-placement="right" title="'+issue.client["tel"]+'"><i class="fas fa-info-circle"></i></a></td>\
-                       <td>' + issue.commercial.full_name + '\
-                       <a tabindex="0" class="btn btn-sm " role="button" data-toggle="tooltip" data-placement="right" title="'+issue.commercial.phone+'"><i class="fas fa-info-circle"></i></a></td>\
+                       <td><span class="float-left">' + issue.client["full_name"] + '</span>\
+                       <a tabindex="0" class="btn btn-sm float-right" role="button" data-toggle="tooltip" data-placement="right" title="'+issue.client["tel"]+'"><i class="fas fa-info-circle"></i></a></td>\
+                       <td><span class="float-left">' + issue.commercial.full_name + '</span>\
+                       <a tabindex="0" class="btn btn-sm float-right" role="button" data-toggle="tooltip" data-placement="right" title="'+issue.commercial.phone+'"><i class="fas fa-info-circle"></i></a></td>\
                        <td>' + (issue.user ? issue.user.name : "Not Assigned") + '</td>\
                        <td>' + stageProcess(issue.stage) + '</td>\
                        <td>' + issue.delivered_at + '</td>\
@@ -85,13 +121,7 @@ function getIssues() {
             $('.table tbody').html(rows);
             //console.log('Heere');
             
-            listIssuesTable =  $('.table').DataTable({
-                "columnDefs": [ {
-                    "targets": 6,
-                    "searchable": false,
-                    "orderable": false
-                  } ]
-            });
+            initDataTable();
         },
         error: function (response) {
             console.log(response);
@@ -150,17 +180,14 @@ $(document).ready(function () {
     // Init Multi select inputs
     $('.fastsearch').select2();
 
-    // destroy and Initial table with datatable if it is initialized
-    if(listIssuesTable){
-        listIssuesTable.destroy();
-    }
-    listIssuesTable =  $('.table').DataTable({
-        "columnDefs": [ {
-            "targets": 6,
-            "searchable": false,
-            "orderable": false
-          } ]
+    initDataTable();
+
+
+    // Get Issues by stage
+    $('body').on('click','.dropdown-item',function(){
+        
     });
+
 
     // Button fix pop up a modal on which stage the issue in
     $('body').on('click', '.btn-fix', function () {

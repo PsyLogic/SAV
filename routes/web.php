@@ -11,12 +11,7 @@
 |
 */
 
-// Route::get('/test',function(){
-//     $pathInfo = pathinfo("C:/wamp64/www/SAV/public/storage/2018-10-02/6/1535458406456.jpg"); 
-//     if( !\File::exists( $pathInfo['dirname'] ) ) {
-//         \File::makeDirectory( $pathInfo['dirname'], 0755, true ); 
-//     }
-// });
+
 
 
 Route::group(['middleware' => ['auth']], function () {
@@ -47,6 +42,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/issues/{id}','IssueController@show')->name('issues.details');
         Route::post('/issues/{id}','IssueController@update')->name('issues.update');
         Route::delete('/issues/{id}','IssueController@delete')->name('issues.delete');
+        Route::get('/issues/stage/{stage}','IssueController@stages')->name('issues.stage');;
 
     });    
 });

@@ -12,7 +12,6 @@ use Carbon\Carbon;
 use App\Commercial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
-// use Image as ImageHandler;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image as ImageHandler;
 use Illuminate\Support\Facades\Storage;
@@ -26,15 +25,15 @@ class IssueController extends Controller
      */
     public function index(Request $request)
     {
-        $issues = Issue::with(['commercial','user:id,name'])->get();
+        $issues = Issue::with(['commercial','user:id,name'])->orderByDesc('delivered_at')->get();
         if($request->ajax()){
             // $issues = $issues->map(function($item){
             //     $item->stage = $item->stage($item->stage);
             //     return $item;
             // });
-            return response()->json($issues->sortByDesc('delivered_at'));
+            return response()->json($issues);
         }
-        return view('issue.index', ['issues' => $issues->sortByDesc('delivered_at'), 'problems' => Problem::all(),'solutions' => Solution::all()]);
+        return view('issue.index', ['issues' => $issues, 'problems' => Problem::all(),'solutions' => Solution::all()]);
     }
 
     /**
@@ -395,10 +394,10 @@ class IssueController extends Controller
         // return route('issues.report',1);
 
 
-         $pdf = PDF::loadView('issue.report');
+        //  $pdf = PDF::loadView('issue.report');
         //  $pdf = PDF::loadView('issue.report', compact('issue'));
         //  $file_name = 'report-'. $issue->imei . '.pdf';
-         return $pdf->download('report.pdf');
+        //  return $pdf->download('report.pdf');
 
     }
 
