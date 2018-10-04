@@ -26,7 +26,7 @@
 <h1 class="text-center text-uppercase">Dashboard</h1>
 <!-- Charts For Softawre & Hardware Issues -->
 <div class="row mt-5">
-    <div class="col-4">
+    <div class="col-xs-12 col-lg-4 mt-5">
         <div class="card">
             <div class="card-header bg-warning text-white text-center text-bold">
                 Diagnostic in Percent
@@ -36,7 +36,7 @@
             </div>
         </div>
     </div>
-    <div class="col-4">
+    <div class="col-xs-12 col-lg-4 mt-5">
         <div class="card">
             <div class="card-header bg-warning2 text-white text-center text-bold">
                 Total of each Diagnostic
@@ -46,14 +46,14 @@
             </div>
         </div>
     </div>
-    <div class="col-4">
+    <div class="col-xs-12 col-lg-4 mt-5">
         <div class="card">
             <div class="card-header bg-warning3 text-white text-center text-bold">
                 Statistics Summary 
             </div>
             <div class="card-body">
                 <div class="row ">
-                    <div class="col-md mt-4 mb-4">
+                    <div class="col mt-4 mb-4">
                         <div class="d-flex border">
                             <div class="bg-secondary text-light p-4">
                                 <div class="d-flex align-items-center h-100">
@@ -66,7 +66,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md mt-4 mb-4">
+                    <div class="col mt-4 mb-4">
                         <div class="d-flex border">
                             <div class="bg-danger text-light p-4">
                                 <div class="d-flex align-items-center h-100">
@@ -80,7 +80,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md mb-4">
+                    <div class="col mb-4">
                         <div class="d-flex border">
                             <div class="bg-warning text-light p-4">
                                 <div class="d-flex align-items-center h-100">
@@ -93,7 +93,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md mb-4">
+                    <div class="col mb-4">
                         <div class="d-flex border">
                             <div class="bg-success text-light p-4">
                                 <div class="d-flex align-items-center h-100">
@@ -114,7 +114,7 @@
 
 <!-- Charts For Models -->
 <div class="row mt-5">
-    <div class="col-4">
+    <div class="col-xs-12 col-lg-4">
         <div class="card">
             <div class="card-header bg-purple text-white text-center text-bold">
                 Pie chart for each Model in Percent
@@ -124,7 +124,7 @@
             </div>
         </div>
     </div>
-    <div class="col-4">
+    <div class="col-xs-12 col-lg-4">
         <div class="card">
             <div class="card-header bg-blue text-white text-center text-bold">
                 Total broken Smartphones by Model
