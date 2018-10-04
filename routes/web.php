@@ -15,9 +15,7 @@
 
 Route::group(['middleware' => ['auth']], function () {
     
-    Route::get('/', function () {
-        return view('welcome');
-    })->name('dashboard');
+    Route::get('/', 'HomeController')->name('dashboard');
     
     Route::get('/issues/create','IssueController@create')->name('issues.create');
     

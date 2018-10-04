@@ -16,7 +16,7 @@ var listIssuesTable = null;
  */
 function stageProcess(stage) {
     if (stage == 1)
-        return '<span class="badge badge-pill badge-secondary">OPEN</span>';
+        return '<span class="badge badge-pill badge-danger">OPEN</span>';
     else if (stage == 2)
         return '<span class="badge badge-pill badge-warning">IN PROCESS</span>';
     else
@@ -42,15 +42,16 @@ function initDataTable(){
     }
     
     listIssuesTable =  $('.table').DataTable({
-        stateSave: true,
+        // stateSave: true,
+        // "scrollX": "800px",
         "columnDefs": [ {
-            "targets": [5,7],
+            "targets": [6,8],
             // "searchable": false,
             "orderable": false
           } ],
           initComplete: function () {
   
-              var column = this.api().column(5);
+              var column = this.api().column(6);
               console.log(column.header());
               var select ='<select>\
                             <optgroup label="Request">\
@@ -71,6 +72,19 @@ function initDataTable(){
                       });
           }
     });
+
+    // Compact Table View
+    //$('.dataTable td').css('padding','0.2em');
+
+    var toggleColumns = '';
+    // Add Toggle for table
+    $('.table thead tr:eq(0) th').each( function (i) {
+        var title = $(this).text();
+        if(i==6)
+            title = 'Request';
+        toggleColumns += '<a href="" class="btn btn-outline-dark toggle-vis" data-column="'+i+'">'+title+'</a>';
+    } );
+    $('.toggle-group').html(toggleColumns);
 }
 
 /**
@@ -88,15 +102,14 @@ function getIssues() {
             $.each(data, function (i, issue) {
                 rows += '\
                    <tr id="row'+issue.id+'">\
+                       <td>' + issue.delivered_at + '</td>\
                        <td>' + issue.client["model"] + '</td>\
                        <td>' + (issue.imei || "999999999999999") + '</td>\
-                       <td><span class="float-left">' + issue.client["full_name"] + '</span>\
-                       <a tabindex="0" class="btn btn-sm float-right" role="button" data-toggle="tooltip" data-placement="right" title="'+issue.client["tel"]+'"><i class="fas fa-info-circle"></i></a></td>\
-                       <td><span class="float-left">' + issue.commercial.full_name + '</span>\
-                       <a tabindex="0" class="btn btn-sm float-right" role="button" data-toggle="tooltip" data-placement="right" title="'+issue.commercial.phone+'"><i class="fas fa-info-circle"></i></a></td>\
+                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-left" role="button" data-toggle="tooltip" data-placement="right" title="'+issue.client["tel"]+'"><i class="fas fa-info-circle"></i></a><span class="">' + issue.client["full_name"] + '</span></td>\
+                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-right" role="button" data-toggle="tooltip" data-placement="right" title="'+issue.commercial.phone+'"><i class="fas fa-info-circle"></i></a><span class="">' + issue.commercial.full_name + '</span></td>\
                        <td>' + (issue.user ? issue.user.name : "Not Assigned") + '</td>\
                        <td>' + stageProcess(issue.stage) + '</td>\
-                       <td>' + issue.delivered_at + '</td>\
+                       <td>' + (issue.diagnostic || "----") + '</td>\
                        <td>\
                            <div class="btn-group">';
                 if (issue.stage == 1)
@@ -110,9 +123,9 @@ function getIssues() {
                                        <a class="dropdown-item btn-fix" href="#" data-stage="' + issue.stage + '" data-id="' + issue.id + '" title="hardware" >Hardware</a>\
                                    </div>';
                 }
-                rows += '&nbsp;<a href="/issues/' + issue.id + '" class="btn btn-info btn-md" data-id="{{$issue->id}}" title="Details"><i class="fas fa-info-circle"></i></a>';
+                rows += '&nbsp;<a href="/issues/' + issue.id + '" class="btn btn-primary btn-md" data-id="{{$issue->id}}" title="Details"><i class="fas fa-info-circle"></i></a>';
                 if(issue.stage == 3){
-                    rows += '&nbsp;<a href="/issues/report/' + issue.id + '" target="_blank" class="btn btn-success btn-md" data-id="{{$issue->id}}" title="Report"><i class="fas fa-print"></i></a>';
+                    rows += '&nbsp;<a href="/issues/report/' + issue.id + '" target="_blank" class="btn btn-warning btn-md" data-id="{{$issue->id}}" title="Report"><i class="fas fa-print"></i></a>';
                 }           
                 rows +='</div>\
                        </td>\
@@ -182,19 +195,23 @@ $(document).ready(function () {
 
     initDataTable();
 
-
-    // Get Issues by stage
-    $('body').on('click','.dropdown-item',function(){
-        
-    });
-
+    // Toggle Columns
+    $('a.toggle-vis').on( 'click', function (e) {
+        e.preventDefault();
+ 
+        // Get the column API object
+        var column = listIssuesTable.column( $(this).attr('data-column') );
+ 
+        // Toggle the visibility
+        column.visible( ! column.visible() );
+    } );
 
     // Button fix pop up a modal on which stage the issue in
     $('body').on('click', '.btn-fix', function () {
 
         id = $(this).data('id'); // get id of the issue
         stage = $(this).data('stage'); // get stage of the issue
-        var imei = $('#row'+id).children().eq(1).text(); // get selected imei from table
+        var imei = $('#row'+id).children().eq(2).text(); // get selected imei from table
         $('#update-to-stage-' + (stage + 1)).modal('toggle'); // toggle modal based on stage of the issue
         $('#update_imei').val(imei); // assign the imei to update_imei input (modal in stage 2) 
 

@@ -47,7 +47,7 @@ class Issue extends Model
     
     public function stage(){
         if($this->stage == 1)
-            return '<span class="badge badge-pill badge-secondary">OPEN</span>';
+            return '<span class="badge badge-pill badge-danger">OPEN</span>';
         else if ($this->stage == 2)
             return '<span class="badge badge-pill badge-warning">IN PROCESS</span>';
         else
@@ -72,17 +72,17 @@ class Issue extends Model
     }
 
     public function french_format($date){
-        return Carbon::parse($date)->format('d-m-Y');
+        return Carbon::parse($date)->format('Y/m/d');
     }
 
     public function getDeliveredAtAttribute($value){
-        return Carbon::parse($value)->format('d-m-Y');
+        return Carbon::parse($value)->format('Y/m/d');
     }
     public function getReceivedAtAttribute($value){
-        return Carbon::parse($value)->format('d-m-Y');
+        return Carbon::parse($value)->format('Y/m/d');
     }
     public function getClosedAtAttribute($value){
-        return Carbon::parse($value)->format('d-m-Y');
+        return Carbon::parse($value)->format('Y/m/d');
     }
 
     public function imagesBefore(){
@@ -96,6 +96,16 @@ class Issue extends Model
     public function getFeesDHAttribute(){
         return $this->charges . ' DH';
     }
+
+    public function scopeTotalIssues($query){ // Params: $withDiagnostic = false
+        return $query->get()->count();
+        // return !($diagnostic) ? $query->whereNotNull('diagnostic')->get()->count() : $query->get()->count();
+    }
+
+    public function scopeTotalOf($query,$where,$value){ 
+        return $query->where($where,$value)->get()->count();
+    }
+
 
 
 }

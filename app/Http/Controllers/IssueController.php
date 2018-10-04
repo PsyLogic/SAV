@@ -26,6 +26,7 @@ class IssueController extends Controller
     public function index(Request $request)
     {
         $issues = Issue::with(['commercial','user:id,name'])->orderByDesc('delivered_at')->get();
+        // return $issues;
         if($request->ajax()){
             // $issues = $issues->map(function($item){
             //     $item->stage = $item->stage($item->stage);

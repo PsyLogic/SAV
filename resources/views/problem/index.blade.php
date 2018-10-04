@@ -34,7 +34,7 @@
         <div class="card">
             <h5 class="card-header text-center text-uppercase">List of commen Problems</h5>
             <div class="card-body">
-                <table class="table">
+                <table class="table text-center">
                     <thead class="thead-dark">
                       <tr>
                         <th scope="col">#</th>

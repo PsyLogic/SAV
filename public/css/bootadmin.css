@@ -28,12 +28,14 @@ body {
 }
 
 .sidebar {
-    min-width: 230px;
-    max-width: 230px;
+    min-width: 180px;
+    max-width: 180px;
     min-height: calc(100vh - 49px);
     transition: all 0.3s;
 }
 .sidebar ul li a {
+    font-size: 15px;
+    font-weight: bold;
     display: block;
     padding: .75rem 1rem;
     text-decoration: none;
@@ -55,7 +57,7 @@ body {
     content: "\f0d8";
 }
 .sidebar.toggled {
-    margin-left: -230px;
+    margin-left: -180px;
 }
 
 .sidebar-dark ul li a {
@@ -66,7 +68,8 @@ body {
 }
 .sidebar-dark ul li a:hover, .sidebar-dark ul .active a {
     color: rgba(255, 255, 255, 1);
-    background: rgba(0, 0, 0, .15);
+    /* background: rgba(0, 0, 0, .15); */
+    background: rgba(108, 117, 125, 0.57);
 }
 .sidebar-dark [aria-expanded="true"] {
     background: rgba(0, 0, 0, .15);
@@ -140,9 +143,9 @@ body {
     text-align: right;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1220px) {
     .sidebar {
-        margin-left: -230px;
+        margin-left: -180px;
     }
     .sidebar.toggled {
         margin-left: 0;

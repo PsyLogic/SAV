@@ -1,28 +1,31 @@
 @extends('layouts.main')
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-5">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
         <div class="card">
             <h5 class="card-header text-center text-uppercase">Insert new Issue</h5>
             <form action="" method="post" id="add-frm-issue">
-                <div class="card-body">
-                    @csrf
-                    <div class="form-group">
-                        <label for="imei" >IMEI</label>
-                        <input type="text" class="form-control" id="imei" name="imei" autocomplete="off" value="999999999999999"> 
-                    </div>
-                    <div class="form-group">
-                        <label for="commercial_id" >Commercial Agent</label>
-                        <select class="form-control" name="commercial_id" id="commercial_id" required>
-                            <option value=""></option>
-                            @foreach($commercials as $commercial)
-                            <option value="{{ $commercial->id }}">{{ $commercial->full_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="received_at" >Received date:</label>
-                        <input type="date" class="form-control" id="received_at" name="received_at" autocomplete="off" required> 
+                <div class="card-body row justify-content-center">
+                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                        @csrf
+                        <div class="form-group">
+                            <label for="imei" >IMEI</label>
+                            <input type="text" class="form-control" id="imei" name="imei" autocomplete="off" value="999999999999999"> 
+                        </div>
+                        <div class="form-group">
+                            <label for="commercial_id" >Commercial Agent</label>
+                            <select class="form-control" name="commercial_id" id="commercial_id" required>
+                                <option value=""></option>
+                                @foreach($commercials as $commercial)
+                                <option value="{{ $commercial->id }}">{{ $commercial->full_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="received_at" >Received date:</label>
+                            <input type="date" class="form-control" id="received_at" name="received_at" autocomplete="off" required> 
+                        </div>
+
                     </div>
                 </div>
                 <div class="card-footer clearfix">
