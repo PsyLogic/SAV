@@ -16,7 +16,7 @@ class SAVMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::user()->isSAV() || Auth::user()->isAdmin()){
+        if(Auth::user()->isSAV || Auth::user()->isAdmin){
                 return $next($request);
         }
         abort(403);

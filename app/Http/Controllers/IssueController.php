@@ -347,9 +347,14 @@ class IssueController extends Controller
      * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        if($request->ajax()){
+            $issue = Issue::findOrFail($id);
+            return response()->json($issue->delete());
+        }
+        
+        abort(403);
     }
 
     /**

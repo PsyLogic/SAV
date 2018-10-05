@@ -38,8 +38,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/issues/report/{id}','IssueController@report')->name('issues.report');
         Route::get('/issues/{id}','IssueController@show')->name('issues.details');
         Route::post('/issues/{id}','IssueController@update')->name('issues.update');
-        Route::delete('/issues/{id}','IssueController@delete')->name('issues.delete');
-        Route::get('/issues/stage/{stage}','IssueController@stages')->name('issues.stage');;
+        Route::delete('/issues/{id}','IssueController@destroy')->name('issues.delete');
 
     });    
 });

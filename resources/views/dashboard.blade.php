@@ -25,7 +25,7 @@
 @section('content')
 <h1 class="text-center text-uppercase">Dashboard</h1>
 <!-- Charts For Softawre & Hardware Issues -->
-<div class="row mt-5">
+<div class="row ">
     <div class="col-xs-12 col-lg-4 mt-5">
         <div class="card">
             <div class="card-header bg-warning text-white text-center text-bold">
@@ -62,7 +62,7 @@
                             </div>
                             <div class="flex-grow-1 bg-white p-4">
                                 <p class="text-uppercase text-secondary mb-0">Requests</p>
-                                <h3 class="font-weight-bold mb-0">55</h3>
+                                <h3 class="font-weight-bold mb-0" id="request"></h3>
                             </div>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                             </div>
                             <div class="flex-grow-1 bg-white p-4">
                                 <p class="text-uppercase text-secondary mb-0">Opened</p>
-                                <h3 class="font-weight-bold mb-0">20</h3>
+                                <h3 class="font-weight-bold mb-0" id="opened"></h3>
                             </div>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                             </div>
                             <div class="flex-grow-1 bg-white p-4">
                                 <p class="text-uppercase text-secondary mb-0">In Process</p>
-                                <h3 class="font-weight-bold mb-0">15</h3>
+                                <h3 class="font-weight-bold mb-0" id="process"></h3>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                             </div>
                             <div class="flex-grow-1 bg-white p-4">
                                 <p class="text-uppercase text-secondary mb-0">Fixed</p>
-                                <h3 class="font-weight-bold mb-0">30</h3>
+                                <h3 class="font-weight-bold mb-0" id="closed"></h3>
                             </div>
                         </div>
                     </div>
@@ -182,6 +182,11 @@
         }
 
         function initCharts() {
+
+            $('#request').html(total_requests);
+            $('#opened').html(opened);
+            $('#process').html(proccess);
+            $('#closed').html(closed);
 
             var diagnistic_label = Object.keys(diagnostic).sort(function(a,b){return diagnostic[a]-diagnostic[b]});
             var diagnostic_data = Object.values(diagnostic).sort();
@@ -318,12 +323,12 @@
             type: 'GET',
             url: '/',
             success: function (response) {
-                total_requests = response.totalRequests;
-                opened = response.opened;
-                proccess = response.proccess;
-                closed = response.closed;
-                models = response.models;
-                diagnostic = response.diagnostic;
+                total_requests = response.totalRequests || 0;
+                opened = response.opened || 0;
+                proccess = response.proccess || 0;
+                closed = response.closed || 0;
+                models = response.models || {};
+                diagnostic = response.diagnostic || {};
 
                 initCharts();
             },

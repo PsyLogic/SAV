@@ -80,6 +80,9 @@
                                     @if ($issue->stage == 3)
                                     <a href="{{ route('issues.report',$issue->id) }}" target="_blank" class="btn btn-warning btn-md" data-id="{{$issue->id}}" title="Report"><i class="fas fa-print"></i></a>
                                     @endif
+                                    @if(auth()->user()->isAdmin)
+                                    <a href="{{ route('issues.delete',$issue->id) }}" class="btn btn-danger btn-md btn-del" data-id="{{$issue->id}}" title="Delete"><i class="fas fa-times"></i></a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

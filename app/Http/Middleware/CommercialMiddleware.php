@@ -15,7 +15,7 @@ class CommercialMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::user()->isCommercial() || Auth::user()->isAdmin()){
+        if(Auth::user()->isCommercial || Auth::user()->isAdmin){
             return $next($request);
         }
 

@@ -125,7 +125,7 @@ function getIssues() {
                 }
                 rows += '&nbsp;<a href="/issues/' + issue.id + '" class="btn btn-primary btn-md" data-id="{{$issue->id}}" title="Details"><i class="fas fa-info-circle"></i></a>';
                 if(issue.stage == 3){
-                    rows += '&nbsp;<a href="/issues/report/' + issue.id + '" target="_blank" class="btn btn-warning btn-md" data-id="{{$issue->id}}" title="Report"><i class="fas fa-print"></i></a>';
+                    rows += '<a href="/issues/' + issue.id + '" class="btn btn-warning btn-md btn-del" data-id="{{$issue->id}}" title="Report"><i class="fas fa-times"></i></a>';
                 }           
                 rows +='</div>\
                        </td>\
@@ -330,6 +330,55 @@ $(document).ready(function () {
 
     });
 
+
+    /**
+     * 
+     * Delete an Issue
+     */
+
+     $('body').on('click','.btn-del',function(e){
+         e.preventDefault();
+         e.stopPropagation();
+        id = $(this).data('id');
+        row = $('#row'+id);
+        swal({
+                title: "Delete confirmation",
+                text: "Do you want to delete this Request, we will keep it information for tracking reasons",
+                icon: "warning",
+                buttons: ["Cancel", true],
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: url_issue + '/' + id,
+                        dataType: 'json',
+                        success: function (data) {
+                            swal("Done", "Problem deleted successfully !", "success");
+                            // getIssues();
+                            row.fadeOut(1000, function(){ $(this).remove();});
+
+                        },
+                        error: function (response) {
+                            console.log(response);
+                            var errors = "";
+                            if (response.status == 500) {
+                                errors = "Message: " + response.responseJSON.message +
+                                    "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
+
+                            } else if (response.status == 404) {
+                                errors = "Problem Not Found";
+                            }
+                            swal("Error", errors, "error");
+                        }
+                    });
+                }
+            });
+
+            return false;
+
+     });
 
     /**
      *
