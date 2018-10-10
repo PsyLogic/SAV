@@ -13,7 +13,7 @@
             border: 1px solid #eee;
             box-shadow: 0 0 10px rgba(0, 0, 0, .15);
             font-size: 16px;
-            line-height: 15px;
+            line-height: 19px;
             font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
             color: #555;
         }
@@ -45,6 +45,13 @@
 
         .invoice-box table tr td {
             padding-top: 5px;
+        }
+
+        .sub-table tbody tr th{
+            width: 30%;    
+        }
+        .sub-table tbody tr td{
+            width: 66%;
         }
 
         @media only screen and (max-width: 600px) {
@@ -97,6 +104,9 @@
             border-color: #343a40;
             float: right;
         }
+        .half{
+            width:50%;
+        }
     </style>
     <script>
         function printReport(e){
@@ -141,38 +151,38 @@
             </tr>
 
             <tr class='details'>
-                <td>
-                    <table>
+                <td class="half">
+                    <table class="sub-table">
                         <tbody>
                             <tr>
-                                <th>Prénom et Nom:</th>
+                                <th>Nom et Prénom:</th>
                                 <td>{{ $issue->client['full_name'] }}</td>
                             </tr>
                             <tr>
-                                <th>Phone:</th>
+                                <th>Téléphone:</th>
                                 <td>{{ $issue->client['tel'] }}</td>
                             </tr>
                             <tr>
-                                <th>Addresse:</th>
+                                <th>Adresse:</th>
                                 <td>{{ $issue->client['address'] }}</td>
                             </tr>
                             <tr>
-                                <th>City:</th>
+                                <th>Ville:</th>
                                 <td>{{ $issue->client['city'] }}</td>
                             </tr>
                         </tbody>
                     </table>
                 </td>
 
-                <td>
-                    <table>
+                <td class="half">
+                    <table class="sub-table">
                         <tbody>
                             <tr>
                                 <th>Nom:</th>
                                 <td>{{ $issue->commercial->full_name }}</td>
                             </tr>
                             <tr>
-                                <th>Phone:</th>
+                                <th>Téléphone:</th>
                                 <td>{{ $issue->commercial->phone }}</td>
                             </tr>
                         </tbody>
@@ -191,8 +201,8 @@
             </tr>
 
             <tr class='details'>
-                <td>
-                    <table>
+                <td class="half">
+                    <table class="sub-table">
                         <tbody>
                             <tr>
                                 <th>Model:</th>
@@ -209,8 +219,8 @@
                         </tbody>
                     </table>
                 </td>
-                <td>
-                    <table>
+                <td class="half">
+                    <table class="sub-table">
                         <tbody>
                             <tr>
                                 <th>Livré à:</th>
@@ -251,11 +261,11 @@
             </tr>
 
             <tr class='details'>
-                <td>
-                    <table>
+                <td class="half">
+                    <table class="sub-table">
                         <tbody>
                             <tr>
-                                <th>Prénom et Nom:</th>
+                                <th>Nom et Prénom:</th>
                                 <td>{{ $issue->user->name }}</td>
                             </tr>
                             {{-- <tr>
@@ -265,8 +275,8 @@
                         </tbody>
                     </table>
                 </td>
-                <td>
-                    <table>
+                <td class="half">
+                    <table class="sub-table">
                         <tbody>
                             <tr>
                                 <th>Diagnostique:</th>
@@ -305,7 +315,7 @@
 
             <tr class='heading'>
                 <td colspan='2'>
-                    État du périphérique final
+                    État final du périphérique
                 </td>
             </tr>
 

@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Commercial;
+use PDF;
+use Auth;
 use App\Image;
 use App\Issue;
 use App\Problem;
 use App\Solution;
-use Auth;
 use Carbon\Carbon;
+use App\Commercial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image as ImageHandler;
+use Illuminate\Support\Facades\Storage;
 
 class IssueController extends Controller
 {
@@ -21,15 +25,11 @@ class IssueController extends Controller
      */
     public function index(Request $request)
     {
-        $issues = Issue::with(['commercial:id,full_name', 'user:id,name'])->get();
-        if ($request->ajax()) {
-            // $issues = $issues->map(function($item){
-            //     $item->stage = $item->stage($item->stage);
-            //     return $item;
-            // });
-            return response()->json($issues->sortByDesc('delivered_at'));
+        $issues = Issue::with(['commercial','user:id,name'])->orderByDesc('delivered_at')->get();
+        if($request->ajax()){
+            return response()->json($issues);
         }
-        return view('issue.index', ['issues' => $issues->sortByDesc('delivered_at'), 'problems' => Problem::all(), 'solutions' => Solution::all()]);
+        return view('issue.index', ['issues' => $issues, 'problems' => Problem::all(),'solutions' => Solution::all()]);
     }
 
     /**
@@ -39,7 +39,7 @@ class IssueController extends Controller
      */
     public function create()
     {
-        return view('issue.create', ['commercials' => Commercial::all()]);
+        return view('issue.create',['commercials' => Commercial::all()]);
     }
 
     /**
@@ -50,27 +50,28 @@ class IssueController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->ajax()) {
-
-            $validate = Validator::make($request->all(), [
+        if($request->ajax()){
+            
+            $validate = Validator::make($request->all(),[
                 'imei' => 'between:0:15',
                 'commercial_id' => 'required',
+                'received_at' => 'required'
             ]);
-
+            
             $imei = $request->imei;
 
             // Check IMEI if exists before sumbit anything
             $client = $this->getClientInformation($imei);
-            if (isset($client['error']) && $client['error'] === true) {
-                return response()->json($client, 404);
-            }
+            if(isset($client['error']) && $client['error'] === true)
+                return response()->json($client,404);
 
             $issue = Issue::create([
                 'imei' => $imei,
                 'commercial_id' => $request->commercial_id,
                 'client' => $client,
+                'received_at' => $request->received_at,
             ]);
-
+                
             return response()->json($issue);
         }
 
@@ -86,7 +87,7 @@ class IssueController extends Controller
     public function show($id)
     {
         $issue = Issue::findOrfail($id);
-        return view('issue.details', compact('issue'));
+        return view('issue.details',compact('issue'));
     }
 
     /**
@@ -98,38 +99,34 @@ class IssueController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($request->ajax()) {
+        if($request->ajax()){
 
             // Validate Request data
-            $this->validate($request, [
+            $this->validate($request,[
                 'imei' => 'required|between:15,15',
-                'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+                'images.*' => 'required|image|mimes:jpg,jpeg,png|max:6144'
             ]);
-
+            
             $imei = $request->imei;
-            $images = $request->file('images');
-            $today = Carbon::now();
 
             // Check IMEI if exists before sumbit anything
             $client = $this->getClientInformation($imei);
-            if (isset($client['error']) && $client['error'] === true) {
-                return response()->json($client, 404);
-            }
-
-            // Upload init Images of phone
-            $path = $today->format('Y-m-d') . '/' . $imei;
+            if(isset($client['error']) && $client['error'] === true)
+                return response()->json($client,404);
+           
+            // Upload init Images of phone 
             $errors = "";
-            $uploadParams = ['images' => $images, 'path' => $path, 'issue_id' => $id, "status" => "before"];
-            if ($request->hasFile('images')) {
-                $errors = $this->uploadPhoto($uploadParams);
-            } else {
+            if($request->hasFile('images')){
+                $upload = $this->uploadImages(Input::file('images'),$id);
+                    $errors = is_bool($upload) ? "" : $upload;
+            }else{
                 $errors = "No File is Uploaded";
             }
 
-            if (!empty($errors) && !is_bool($errors)) {
-                return response()->json(['message' => $errors], 412);
+            if(!empty($errors)){
+                return response()->json(['message' => $errors],412);
             }
-
+            
             // update issue information
             $issue = Issue::findOrFail($id);
             $issue->imei = $imei;
@@ -138,8 +135,8 @@ class IssueController extends Controller
             $issue->stage = 2; // Going to stage 2 of the issue (in process)
             $issue->client = $client; // Update Client information
             $issue->saveOrFail();
-
-            return response()->json(['message' => "The IMEI is verified and Images are uploaded successfully"], 200);
+            
+            return response()->json(['message' => "The IMEI is verified and Images are uploaded successfully"],200);
         }
         abort(403);
     }
@@ -153,64 +150,91 @@ class IssueController extends Controller
      */
     public function finalUpdate(Request $request, $id)
     {
-        if ($request->ajax()) {
+        if($request->ajax()){
 
             $issue = Issue::findOrFail($id);
-            $imei = $issue->imei;
             $diagnostic = $request->diagnostic;
-            $images = $request->file('images');
-
-            // Upload Images Information
-            $today = Carbon::now();
-            $path = $today->format('Y-m-d') . '/' . $imei;
+            $imei = $request->imei_stage_3;
             $errors = "";
-            $uploadParams = ['images' => $images, 'path' => $path, 'issue_id' => $issue_id, "status" => "after"];
+        
+            if($imei == "999999999999999" || empty($imei)){
+                $errors = "You must Fill the IMEI field with the real one";
+                return response()->json(['message' => $errors],412);
+            }
 
-            if ($diagnostic == 'software') {
-                $this->validate($request, [
+            if($diagnostic == 'software'){
+                $this->validate($request,[
                     'solution' => 'required',
-                    'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+                    'images.*' => 'image|mimes:jpg,jpeg,png|max:6144'
                 ]);
 
-                if ($request->hasFile('images')) {
-                    $errors = $this->uploadPhoto($uploadParams);
+                // Upload init Images of phone 
+
+                if($request->hasFile('images')){
+                    $upload = $this->uploadImages(Input::file('images'),$id,"after");
+                    $errors = is_bool($upload) ? "" : $upload;
                 }
-
-                if (!empty($errors) && !is_bool($errors)) {
-                    return response()->json(['message' => $errors], 412);
-                }
-
-            } else {
-                $this->validate($request, [
-                    'solution' => 'required',
-                    'problems' => 'required',
-                    'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-                ]);
-
-                if ($request->hasFile('images')) {
-                    $errors = $this->uploadPhoto($uploadParams);
-                } else {
-                    $errors = "No File is Uploaded";
-                }
-
-                if (!empty($errors) && !is_bool($errors)) {
-                    return response()->json(['message' => $errors], 412);
+                
+                if(!empty($errors)){
+                    return response()->json(['message' => $errors],412);
                 }
 
                 // update issue information
+                $issue->imei = $imei; // Imei of smartphone.
+                $issue->diagnostic = $diagnostic; // The diagnostic of issue ( software).
+                $issue->closed_at = $today; // The date of closing the issue.
+                $issue->stage = 3; // Going to stage 3 of the issue (Closed)
+                $issue->saveOrFail();
+
+            }else{
+                
+                $this->validate($request,[
+                    'solution' => 'required',
+                    'images.*' => 'required|image|mimes:jpg,jpeg,png|max:6144'
+                ]);
+
+                // Upload init Images of phone
+                $errors = "";
+
+                if($request->hasFile('images')){
+                    $upload = $this->uploadImages(Input::file('images'),$id,"after");
+                    $errors = is_bool($upload) ? "" : $upload;
+                }else{
+                    $errors = "No File is Uploaded";
+                }
+                
+                if(!empty($errors)){
+                    return response()->json(['message' => $errors],412);
+                }
+                
+
+                // update issue information
+                $issue->imei = $imei; // The diagnostic if issue ( software).
+                $issue->diagnostic = $diagnostic; // The diagnostic if issue ( software).
                 $issue->charges = $request->charges; // Fees of repair.
+                $issue->closed_at = $today; // The date of closing the issue.
+                $issue->stage = 3; // Going to stage 3 of the issue (closed)
+                $issue->saveOrFail();
+
+                // Check if problem is selected or an other problem is defined
+                if(!empty($request->extra_problem)){
+                    $problem = Problem::create([
+                            'content' => $request->extra_problem,
+                            'eligibility' => $request->eligibility
+                    ]);
+
+                    $problem = Problem::find($problem->id);
+                    $issue->problems()->attach($problem);
+                }
+
+                $problems = Problem::find($request->problems);
+                $issue->problems()->attach($problems);
             }
 
-            // update issue information
-            $issue->diagnostic = $diagnostic; // The diagnostic if issue ( software).
-            $issue->closed_at = $today; // The date of closing the issue.
-            $issue->stage = 3; // Going to stage 3 of the issue (Closed)
-            $issue->saveOrFail();
-
-            // Check if solution is selected or an other solution is defined
-            if (!empty($request->extra_solution)) {
+             // Check if solution is selected or an other solution is defined
+            if(!empty($request->extra_solution)){
                 $solution = Solution::create([
-                    'content' => $request->extra_solution,
+                        'content' => $request->extra_solution,
                 ]);
 
                 $solution = Solution::find($solution->id);
@@ -219,35 +243,25 @@ class IssueController extends Controller
 
             $solutions = Solution::find($request->solution);
             $issue->solutions()->attach($solutions);
-
-            // Check if problem is selected or an other problem is defined
-            if (!empty($request->extra_problem)) {
-                $problem = Problem::create([
-                    'content' => $request->extra_problem,
-                    'eligibility' => $request->eligibility,
-                ]);
-
-                $problem = Problem::find($problem->id);
-                $issue->problems()->attach($problem);
-            }
-
-            $problems = Problem::find($request->problems);
-            $issue->problems()->attach($problems);
-
-            return response()->json(['message' => "Thank you for your work, the issue is closed now"], 200);
-
+            
+            return response()->json(['message' => "Thank you for your work, the issue is closed now"],200);
         }
         abort(403);
     }
+   
     /**
      * Remove the specified resource from storage.
      *
      * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
+    public function destroy(Request $request, $id){
+        if($request->ajax()){
+            $issue = Issue::findOrFail($id);
+            return response()->json($issue->delete());
+        }
+        
+        abort(403);
     }
 
     /**
@@ -256,17 +270,16 @@ class IssueController extends Controller
      * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
-    public function images(Request $request)
-    {
-        if ($request->ajax()) {
-
+    public function images(Request $request){
+        if($request->ajax()){
+            
             $id = $request->id;
             $status = $request->status;
-
-            $images = Image::where('issue_id', $id)
-                ->where('status', $status)
-                ->get();
-            $images = $images->map(function ($item) {
+    
+            $images = Image::where('issue_id',$id)
+                            ->where('status',$status)
+                            ->get();
+            $images = $images->map(function($item){
                 $item->file_name = $item->getImageUrl();
                 return $item;
             });
@@ -277,67 +290,97 @@ class IssueController extends Controller
         abort(403);
     }
 
-    private function uploadPhoto(array $info)
-    {
 
-        $uploaded = true;
-        $errors = "";
-        foreach ($info['images'] as $image) {
-            $storePath = $image->store($path);
-            if ($storePath) {
-                $newImage = new Image();
-                $newImage->file_name = $storePath;
-                $newImage->issue_id = $info['issue_id'];
-                $newImage->status = $info['status'];
-                $newImage->saveOrFail();
-            } else {
-                $uploaded = false;
-                $errors += "Error Uploading File: " . $image->gertClientOriginalName()+"\n";
-            }
-        }
+    /**
+     * Get Report summary of an issue
+     *
+     * @param [integer] $id
+     * @return void
+     */
+    public function report($id){
+        
+        $issue = Issue::findOrFail($id);
+        return view('issue.report', compact('issue'));
 
-        if (!$uploaded) {
-            return $errors;
-        }
-
-        return $uploaded;
+        // view()->share('issue',$issue);
+        // return route('issues.report',1);
+        //  $pdf = PDF::loadView('issue.report');
+        //  $pdf = PDF::loadView('issue.report', compact('issue'));
+        //  $file_name = 'report-'. $issue->imei . '.pdf';
+        //  return $pdf->download('report.pdf');
 
     }
-    private function getClientInformation($imei)
-    {
-        if (!empty($imei) && strlen($imei) == 15) {
-            $result = $this->verifyIMEI($imei);
-            if ($result['code'] == 404) {
-                return ['message' => $result['content'], 'error' => true];
-            }
 
+    private function getClientInformation($imei){
+        if(!empty($imei) && strlen($imei) == 15){
+            $result = $this->verifyIMEI($imei);
+            if( $result['code'] == 404 )
+                return ['message' => $result['content'], 'error'=>true];
+            
             return $result['content'];
         }
     }
 
-    private function verifyIMEI($imei)
-    {
-        $endpoint = "http://154.70.200.106:8004/api/getinfo";
-        $client = new \GuzzleHttp\Client();
-
-        $response = $client->request('GET', $endpoint, ['query' => [
-            'imei' => $imei,
-        ]]);
+    private function verifyIMEI($imei){
+        $endpoint = "http://154.70.200.106:8003/api/getinfo";
+        $client = new  \GuzzleHttp\Client();
+        $options = [ 'query' => ['imei' => $imei] ];
+        
+        $response = $client->request('GET', $endpoint, $options);
 
         $content = json_decode($response->getBody(), true);
-        $statusCode = $content['status'];
+        $statusCode = $content['status']; 
 
-        if ($statusCode == 200) {
+        if($statusCode == 200){
+            $phone_info = $content['data'][0];
             $registration_info = $content['data'][0]['registration'];
             $client_info = $content['data'][0]['registration']['client'];
             $content = [
+                "imei2"     => $phone_info['imei2'],
+                "model"     => $phone_info['model']['name'],
                 "date_flow" => $registration_info['data_flow'],
                 "full_name" => $client_info['first_name'] . ' ' . $client_info['last_name'],
-                "tel" => $client_info['tel'],
+                "address" => $client_info['address'] ?? '',
+                "city" => $client_info['city'] ?? '',
+                "tel" => $client_info['tel'] ?? '',
             ];
-        } else {
+        }else{
             $content = $content['data'];
         }
-        return ['code' => $statusCode, 'content' => $content];
+        return ['code'=>$statusCode,'content'=>$content];
+    }
+
+    private function checkDirectory(string $path){
+        $pathInfo = pathinfo($path); 
+        if( !\File::exists( $pathInfo['dirname'] ) ) {
+            \File::makeDirectory( $pathInfo['dirname'], 0755, true ); 
+        }
+    }
+
+    private function uploadImages($images, $id, $status = "before"){
+
+        $today = Carbon::now();
+        $folder = $today->format('Y-m-d').'/'.$id.'/';
+        $path = public_path('storage').'/'.$folder;
+
+        foreach($images as $image){
+            $fileName = time().'.'.$image->getClientOriginalExtension();
+            $fullPath = $path.$fileName;
+            $this->checkDirectory($fullPath);
+            $saved = ImageHandler::make($image)
+            ->resize(600, 500)
+            ->save($fullPath);
+            if($saved){
+                $newImage = new Image();
+                $newImage->file_name = $folder.$fileName;
+                $newImage->issue_id = $id;
+                $newImage->status = $status;
+                $newImage->saveOrFail();
+            }else{
+                $errors += "Error Uploading File: " . $image->gertClientOriginalName() + "\n";
+            }
+        }
+
+        return empty($errors) ?? $errors; 
     }
 }
