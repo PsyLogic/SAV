@@ -13,7 +13,7 @@
             border: 1px solid #eee;
             box-shadow: 0 0 10px rgba(0, 0, 0, .15);
             font-size: 16px;
-            line-height: 19px;
+            line-height: 15px;
             font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
             color: #555;
         }
@@ -48,7 +48,7 @@
         }
 
         .sub-table tbody tr th{
-            width: 30%;    
+            width: 34%;    
         }
         .sub-table tbody tr td{
             width: 66%;
