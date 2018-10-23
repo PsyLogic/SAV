@@ -144,7 +144,7 @@
 <script>
     $(document).ready(function () {
 
-        var total_requests, opened, proccess, closed, models, diagnostic;
+        var total_requests, opened, process, closed, models, diagnostic;
 
         function getRandomArbitrary(min, max) {
             min = Math.ceil(min);
@@ -185,13 +185,13 @@
 
             $('#request').html(total_requests);
             $('#opened').html(opened);
-            $('#process').html(proccess);
+            $('#process').html(process);
             $('#closed').html(closed);
 
             var diagnistic_label = Object.keys(diagnostic).sort(function(a,b){return diagnostic[a]-diagnostic[b]});
             var diagnostic_data = Object.values(diagnostic).sort();
             var diagnostic_percents = diagnostic_data.map(function ($value) {
-                return Math.ceil(($value / closed) * 100);
+                return (($value / closed) * 100).toFixed(1);
             });
             var pieChartSH = new Chart($('#pieChartSH'), {
                 type: 'pie',
@@ -248,12 +248,12 @@
                     },
                 }
             });
-
             
-            var models_label = Object.keys(models).sort(function(a,b){return models[a]-models[b]});
-            var models_data = Object.values(models).sort();
-            var models_percents = models_data.map(function ($value) {
-                return Math.ceil(($value / total_requests) * 100);
+            var models_label = Object.keys(models).sort(function(a,b){ return models[a]-models[b]; });
+            var models_data = Object.values(models).sort(function(a,b){return a-b});
+
+            var models_percents = models_data.map(function (value) {
+                return ((value / total_requests) * 100).toFixed(1);
             });
             var backgrounds = colors(3);
             var pieChartModel = new Chart($('#pieChartModel'), {
@@ -325,7 +325,7 @@
             success: function (response) {
                 total_requests = response.totalRequests || 0;
                 opened = response.opened || 0;
-                proccess = response.proccess || 0;
+                process = response.process || 0;
                 closed = response.closed || 0;
                 models = response.models || {};
                 diagnostic = response.diagnostic || {};
