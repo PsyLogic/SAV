@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Issue;
+use DB;
 
 class HomeController extends Controller
 {
@@ -23,9 +24,7 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function __invoke(Request $request){
-
         if($request->ajax()){
-            
             // Total of requests
             $totalRequests = Issue::totalIssues();
     
@@ -51,6 +50,21 @@ class HomeController extends Controller
         }
         
         return view('dashboard');
+
+    }
+
+    public function problemsByModel($model){
+        if($model!='none'){
+            $eligibility = 1;
+            $problems =  DB::select('select p.content, count(p.id) as countp
+                                from issues i, problems p, issue_problem ip 
+                                where i.id = ip.issue_id and p.id = ip.problem_id and JSON_EXTRACT(client, "$.model") = ? and p.eligibility = ?
+                                group by p.content order by countp desc',
+                            [$model,$eligibility]);
+            
+            return response()->json($problems);
+        }
+        return response()->json(array());
 
     }
 }

@@ -16,6 +16,7 @@
 Route::group(['middleware' => ['auth']], function () {
     
     Route::get('/', 'HomeController')->name('dashboard');
+    Route::get('/pmodels/{model}', 'HomeController@problemsByModel')->name('pmodels');
     
     Route::get('/issues/create','IssueController@create')->name('issues.create');
     

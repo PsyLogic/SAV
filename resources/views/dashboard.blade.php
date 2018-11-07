@@ -134,9 +134,19 @@
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-
+    <div class="col-xs-12 col-lg-4">
+        <div class="card">
+            <div class="card-header bg-blue text-white text-bold text-left">
+                Count of <i>Problems</i> by <i>Model</i>
+                <select name="models" id="pmodels" class="float-right col-4" style="border-radius:5px;">
+                    <option value="none">Select Model</option>
+                </select>
+            </div>
+            <div class="card-body">
+                <canvas id="barChartPModel"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 @section('js')
@@ -145,25 +155,9 @@
     $(document).ready(function () {
 
         var total_requests, opened, process, closed, models, diagnostic;
-
-        function getRandomArbitrary(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min)) + min;
-        }
-
+        var barChartModel = null;
+        
         function colors(theme = 1) {
-            // var colors = [];
-
-            // for (i = 0; i < $count; i++) {
-            //     var red = getRandomArbitrary(1, 250);
-            //     var blue = getRandomArbitrary(1, 250);
-            //     var green = getRandomArbitrary(1, 250);
-            //     var color = 'rgba(' + red + ',' + blue + ',' + green + ')'
-            //     colors.push(color);
-            // }
-
-            // return colors;
             var colors;
             switch(theme){
                 case 1:
@@ -317,8 +311,91 @@
                     }
                 }
             });
+
+            barChartModel = new Chart($('#barChartPModel'), {
+                type: 'bar',
+                data: {
+                    labels: ['Problem'],
+                    datasets: [{
+                        label: 'Models',
+                        data: [],
+                    }]
+                },
+                options: {
+                    legend:{
+                        display: false,
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                stepSize:1,
+                            },
+                        }]
+                    }
+                }
+            });
+
+
+            // Add Models to P model Select
+            $.each(Object.keys(models),function(k,model){
+                $('#pmodels').append('<option value="'+model+'">'+model+'</option>');
+            });
         }
 
+        function pieChartPModels(labels,data){
+            var backgrounds = colors(3);
+
+            if(barChartModel != null){
+                barChartModel.destroy();
+            }
+
+            barChartModel = new Chart($('#barChartPModel'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Models',
+                        data: data,
+                        backgroundColor: '#007bff',
+                        hoverBackgroundColor: '#007bfff2',
+                        borderColor: '#007bff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    legend:{
+                        display: false,
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                stepSize:1,
+                            },
+                        }],
+                        xAxes: [{
+                            barPercentage: .8,
+                            categoryPercentage: .6,
+                            ticks:{
+                                autoSkip: false,
+                                minRotation: 45
+                            }
+                        }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                var label = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                return "Total: "+label;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Init Dashboard
         $.ajax({
             type: 'GET',
             url: '/',
@@ -336,6 +413,32 @@
                 console.log(response);
             }
         });
+        
+        // Onchange Model , Draw Problems Model Chart 
+        $('#pmodels').change(function(){
+
+            $.ajax({
+                type: 'GET',
+                url: '/pmodels/'+$(this).val(),
+                success: function (response) {
+                    var labels=[];
+                    var data=[];
+                    $.each(response,function(k,rep){
+                        labels.push(rep.content);
+                        data.push(rep.countp);
+                    })
+                    pieChartPModels(labels,data);
+                },
+                error: function (response) {
+                    console.log(response);
+                }
+            });
+            
+
+
+
+        })
+
 
     });
 

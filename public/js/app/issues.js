@@ -42,6 +42,33 @@ function initDataTable(){
     }
     
     listIssuesTable =  $('.table').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excel',
+                text:'EXCEL',
+                className:'btn btn-success btn-sm float-right ml-2',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdf',
+                text:'PDF',
+                className:'btn btn-success btn-sm float-right ml-2',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'print',
+                text:'PRINT',
+                className:'btn btn-success btn-sm float-right ml-2',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            }
+        ],
         // stateSave: true,
         // "scrollX": "800px",
         "columnDefs": [ {
@@ -52,7 +79,6 @@ function initDataTable(){
           initComplete: function () {
   
               var column = this.api().column(6);
-              console.log(column.header());
               var select ='<select>\
                             <optgroup label="Request">\
                             <option value=""></option>\
