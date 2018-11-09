@@ -42,7 +42,7 @@ function initDataTable(){
     }
     
     listIssuesTable =  $('.table').DataTable({
-        dom: 'Bfrtip',
+        dom: 'lBfrtip',
         buttons: [
             {
                 extend: 'excel',
@@ -76,6 +76,7 @@ function initDataTable(){
             // "searchable": false,
             "orderable": false
           } ],
+          "order": [[ 0, "desc" ]],
           initComplete: function () {
   
               var column = this.api().column(6);

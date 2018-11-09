@@ -57,11 +57,11 @@ class Issue extends Model
     
 
     public function commercial(){
-        return $this->belongsTo(Commercial::class);
+        return $this->belongsTo(Commercial::class)->withTrashed();
     }
 
     public function user(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function problems(){
