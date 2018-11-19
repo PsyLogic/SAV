@@ -9,7 +9,6 @@
         <li><a href="{{ route('problems.index') }}"><i class="fas fa-list-ul"></i> Problems</a></li>
         <li><a href="{{ route('solutions.index') }}"><i class="fas fa-list-ul"></i> Solutions</a></li>
         @endif
-
         @if(auth()->user()->isAdmin)
         <li>
             <a href="#sm_expand_1" data-toggle="collapse">
@@ -22,6 +21,6 @@
             </ul>
         </li>
         @endif
-        {{-- <li><a href="#"><i class="fa fa-fw fa-link"></i> Settings</a></li> --}}
+        <li><a href="http://154.70.200.106:8003/public-registration" target="_blank"><i class="fa fa-fw fa-link"></i> P-Registration</a></li>
     </ul>
 </div>
