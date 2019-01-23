@@ -258,7 +258,8 @@ class IssueController extends Controller
                 
                 $this->validate($request,[
                     'solution' => 'required',
-                    'images.*' => 'required|image|mimes:jpg,jpeg,png|max:6144'
+                    'images.*' => 'required|image|mimes:jpg,jpeg,png|max:6144',
+                    'charges' => 'numeric'
                 ]);
 
                 // Upload init Images of phone 

@@ -113,7 +113,7 @@
                         <div class="client-permission">
                             <div class="form-group">
                                 <div class="alert alert-warning">
-                                    <p>You must Call The Client for fees permission</p> 
+                                    <p>You must Call The Client for the charges</p> 
                                     <p>Full Name: {{$issue->client['full_name']}}</p> 
                                     <p>Phone: {{$issue->client['tel']}}</p> 
                                 </div> 
@@ -133,7 +133,7 @@
                             <input type="text" class="form-control" id="extra_solution_hardware" name="extra_solution"> 
                         </div>
                         <div class="form-group">
-                            <label for="fee_hardware">Fees</label>
+                            <label for="fee_hardware">Charges</label>
                             <input type="text" class="form-control" id="fee_hardware" name="charges" value="0"> 
                         </div>
                         <div class="form-group">
