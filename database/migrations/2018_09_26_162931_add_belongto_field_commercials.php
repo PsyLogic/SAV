@@ -14,7 +14,7 @@ class AddBelongtoFieldCommercials extends Migration
     public function up()
     {
         Schema::table('commercials', function (Blueprint $table) {
-            $table->string('belong_to');
+            $table->string('belong_to')->nullable();
         });
     }
 

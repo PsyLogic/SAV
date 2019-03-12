@@ -23,8 +23,11 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function __invoke(Request $request){
-        if($request->ajax()){
+    public function __invoke(){
+        return view('dashboard');
+    }
+
+    public function getStatistics(){
             // Total of requests
             $totalRequests = Issue::totalIssues();
     
@@ -47,10 +50,6 @@ class HomeController extends Controller
             })->all();
         
             return response()->json(compact('totalRequests','opened','process','closed','models','diagnostic'));
-        }
-        
-        return view('dashboard');
-
     }
 
     public function problemsByModel($model){

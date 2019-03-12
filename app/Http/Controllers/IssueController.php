@@ -26,12 +26,7 @@ class IssueController extends Controller
     public function index(Request $request)
     {
         $issues = Issue::with(['commercial','user:id,name'])->orderByDesc('delivered_at')->get();
-        // return $issues;
         if($request->ajax()){
-            // $issues = $issues->map(function($item){
-            //     $item->stage = $item->stage($item->stage);
-            //     return $item;
-            // });
             return response()->json($issues);
         }
         return view('issue.index', ['issues' => $issues, 'problems' => Problem::all(),'solutions' => Solution::all()]);
@@ -57,7 +52,7 @@ class IssueController extends Controller
     {
         if($request->ajax()){
             
-            $validate = Validator::make($request->all(),[
+            Validator::make($request->all(),[
                 'imei' => 'between:0:15',
                 'commercial_id' => 'required',
                 'received_at' => 'required'

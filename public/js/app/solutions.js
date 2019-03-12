@@ -8,10 +8,7 @@ var id = null;
 
 function initDataTable(){
     // destroy and Initial table with datatable if it is initialized
-    if(solution_table){
-        solution_table.destroy();
-    }
-    solution_table =  $('.table').DataTable();
+    solution_table = $(".table").DataTable();
 }
 
 
@@ -38,6 +35,8 @@ function getSolutions() {
                    </tr>\
                    ';
             });
+            solution_table.destroy();
+            $('.table tbody').empty();
             $('.table tbody').html(rows);
             initDataTable();
         },
@@ -48,7 +47,6 @@ function getSolutions() {
 }
 
 $(document).ready(function () {
-
     initDataTable();
     // Insert new Solution
     $('#add-frm-solution').submit(function (e) {
@@ -161,6 +159,7 @@ $(document).ready(function () {
                         success: function (data) {
                             swal("Done", "Solution deleted successfully !", "success");
                             getSolutions();
+
                         },
                         error: function (response) {
                             console.log(response);

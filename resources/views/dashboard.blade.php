@@ -398,7 +398,7 @@
         // Init Dashboard
         $.ajax({
             type: 'GET',
-            url: '/',
+            url: '/get-statistics',
             success: function (response) {
                 total_requests = response.totalRequests || 0;
                 opened = response.opened || 0;
