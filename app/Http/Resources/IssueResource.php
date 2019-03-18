@@ -16,7 +16,6 @@ class IssueResource extends JsonResource
     {
         return [
             'client'=> $this->client,
-            'client'=> $this->client,
             'commercial_name'=> $this->commercial->full_name,
             'commercial_phone'=> $this->commercial->phone,
             'diagnostic'=> $this->diagnostic,
@@ -24,7 +23,7 @@ class IssueResource extends JsonResource
             'imei'=> $this->imei,
             'delivered_at'=> $this->delivered_at,
             'stage'=> $this->stage,
-            'user_name'=> $this->user->name,
+            'user_name'=> $this->user->name ?? 'Not Assigned',
             'user_super'=> auth()->user()->isAdmin,
         ];
     }

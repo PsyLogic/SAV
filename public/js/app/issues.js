@@ -155,7 +155,7 @@ function getIssues() {
                        <td>${(issue.imei || "999999999999999")}</td>
                        <td class="text-center"><a tabindex="0" class="btn btn-sm float-left btn-togg" role="button" data-skin="dark" data-toggle="m-tooltip" data-placement="top" data-container="body" data-html="true" title="<code><b>${issue.client.tel}</b></code>"><i class="fas fa-info-circle"></i></a><span class="">${issue.client.full_name}</span></td>
                        <td class="text-center"><a tabindex="0" class="btn btn-sm float-right btn-togg" role="button" data-skin="dark" data-toggle="m-tooltip" data-placement="top" data-container="body" data-html="true" title="<code><b>${issue.commercial_phone}</b></code>"><i class="fas fa-info-circle"></i></a><span class="">${issue.commercial_name}</span></td>
-                       <td>${(issue.user_name ? issue.user_name : "Not Assigned")}</td>
+                       <td>${issue.user_name}</td>
                        <td>${stageProcess(issue.stage)}</td>
                        <td>${(issue.diagnostic || "----")}</td>
                        <td>
