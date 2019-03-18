@@ -13,13 +13,13 @@ $(document).ready(function () {
             success: function (response) {
                 var images = '';
                 $.each(response, function (key, image) {
-                    images += '<a href="' + image.file_name + '"><img src="' + image.file_name + '" alt="..." style="height:150px; width:150px;"  class="img-thumbnail img-fluid"></a>' + "\n";
+                    images += `<a href="${image.file_name}"><img src="${image.file_name}" alt="..." style="height:150px; width:150px;"  class="img-thumbnail img-fluid"></a>` + "\n";
                 });
                 $('.popup-gallery').html(images);
                 $('#images-modal').modal('toggle');
             },
             error: function (response) {
-                console.log(response);
+                // console.log(response);
             }
         });
 
@@ -52,11 +52,5 @@ $(document).ready(function () {
             }
         }
     });
-
-
-
-
-
-
 
 });

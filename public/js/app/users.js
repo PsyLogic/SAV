@@ -6,12 +6,14 @@ var url_user = "/users"
 var users_table = null;
 var id = null;
 
-function initDataTable(){
+function initDataTable(newData){
     // destroy and Initial table with datatable if it is initialized
-    if(users_table){
+    if(newData !== undefined){
         users_table.destroy();
+        $('.table tbody').empty();
+        $('.table tbody').html(newData);
     }
-    users_table =  $('.table').DataTable();
+    users_table =  $('.table').DataTable({ responsive: true });
 }
 
 
@@ -27,25 +29,22 @@ function getUsers() {
         success: function (data) {
             var rows = '';
             $.each(data, function (i, user) {
-                rows += '\
-                    <tr>\
-                        <th scope="row">' + (i + 1) + '</th>\
-                        <td>' + user.name + '</td>\
-                        <td>' + user.username + '</td>\
-                        <td>' + user.type + '</td>\
-                        <td>\
-                            <button type="button" class="btn btn-danger" data-id="' + user.id + '" title="Delete"><i class="fa fa-times"></i></button>\
-                            <button type="button" class="btn btn-info" data-id="' + user.id + '" title="Edit"><i class="far fa-edit"></i></button>\
-                            <button type="button" class="btn btn-secondary" data-id="' + user.id + '" title="Changer Mot de passe"><i class="fas fa-key"></i></button>\
-                        </td>\
-                    </tr>\
-                    ';
+                rows += `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.username}</td>
+                        <td>${user.type}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger" data-id="${user.id}" title="Delete"><i class="fa fa-times"></i></button>
+                            <button type="button" class="btn btn-info" data-id="${user.id}" title="Edit"><i class="far fa-edit"></i></button>
+                            <button type="button" class="btn btn-medal" data-id="${user.id}" title="Changer Mot de passe"><i class="fas fa-key"></i></button>
+                        </td>
+                    </tr>`;
             });
-            $('.table tbody').html(rows);
-            initDataTable();
+            initDataTable(rows);
         },
         error: function (response) {
-            console.log(response);
+            // console.log(response);
         }
     });
 }
@@ -68,7 +67,7 @@ $(document).ready(function () {
                 getUsers();
             },
             error: function (response) {
-                console.log(response);
+                // console.log(response);
                 var errors = "";
                 if (response.status == 412) {
                     errors = response.responseJSON.message;
@@ -104,7 +103,7 @@ $(document).ready(function () {
                 $('#update-user').modal('toggle');
             },
             error: function (response) {
-                console.log(response);
+                // console.log(response);
                 var errors = "";
                 if (response.status == 404) {
                     errors = "User not found";
@@ -128,12 +127,12 @@ $(document).ready(function () {
             dataType: 'json',
             data: formData,
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 swal("Done", "user updated successfully !", "success");
                 getUsers();
             },
             error: function (response) {
-                console.log(response);
+                // console.log(response);
                 var errors = "";
                 if (response.status == 422) {
                     $.each(response.responseJSON.errors, function (field, error) {
@@ -167,12 +166,12 @@ $(document).ready(function () {
                         url: url_user + '/' + id,
                         dataType: 'json',
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             swal("Done", "user deleted successfully !", "success");
                             getUsers();
                         },
                         error: function (response) {
-                            console.log(response);
+                            // console.log(response);
                             var errors = "";
                             if (response.status == 500) {
                                 errors = "Message: " + response.responseJSON.message +
@@ -190,7 +189,7 @@ $(document).ready(function () {
 
 
     // Toggle Password Modal
-    $('body').on('click', '.btn-secondary', function () {
+    $('body').on('click', '.change-password', function () {
         id = $(this).data('id');
         $('#update-user-password').modal('toggle');
 
@@ -204,12 +203,12 @@ $(document).ready(function () {
                 dataType: 'json',
                 data: formData,
                 success: function (data) {
-                    console.log(data);
+                    // console.log(data);
                     swal("Done", "Password updated successfully !", "success");
                 },
                 error: function (response) {
                     var errors = "";
-                    console.log(response);
+                    // console.log(response);
                     if (response.status == 422) {
                         $.each(response.responseJSON.errors, function (field, error) {
                             errors += "- " + error[0] + "\n";

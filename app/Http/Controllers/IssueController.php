@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image as ImageHandler;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\IssueResource;
 
 class IssueController extends Controller
 {
@@ -23,13 +24,19 @@ class IssueController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
         $issues = Issue::with(['commercial','user:id,name'])->orderByDesc('delivered_at')->get();
-        if($request->ajax()){
-            return response()->json($issues);
-        }
         return view('issue.index', ['issues' => $issues, 'problems' => Problem::all(),'solutions' => Solution::all()]);
+    }
+
+    public function list(Request $request){
+        // $issues = Issue::with(['commercial','user:id,name'])->orderByDesc('delivered_at')->get();
+        if($request->ajax()){
+            return IssueResource::collection(Issue::all());
+            // return response()->json($issues);
+        }
+        return abort(403);
     }
 
     /**
@@ -57,7 +64,6 @@ class IssueController extends Controller
                 'commercial_id' => 'required',
                 'received_at' => 'required'
             ]);
-            
             $imei = $request->imei;
 
             // Check IMEI if exists before sumbit anything

@@ -6,9 +6,14 @@ var url_solution = "/solutions"
 var solution_table = null;
 var id = null;
 
-function initDataTable(){
-    // destroy and Initial table with datatable if it is initialized
-    solution_table = $(".table").DataTable();
+function initDataTable(newData){
+
+    if (newData !== undefined) {
+        solution_table.destroy();
+        $('.table tbody').empty();
+        $('.table tbody').html(newData);
+    }
+    solution_table = $(".table").DataTable({responsive: true});
 }
 
 
@@ -24,21 +29,18 @@ function getSolutions() {
         success: function (data) {
             var rows = '';
             $.each(data, function (i, solution) {
-                rows += '\
-                   <tr>\
-                       <th scope="row">' + (parseInt(i) + 1) + '</th>\
-                       <td>' + solution.content + '</td>\
-                       <td>\
-                           <button type="button" class="btn btn-danger" data-id="' + solution.id + '" title="Delete"><i class="fa fa-times"></i></button>\
-                           <button type="button" class="btn btn-info" data-id="' + solution.id + '" title="Edit"><i class="far fa-edit"></i></button>\
-                       </td>\
-                   </tr>\
-                   ';
+                rows += `
+                   <tr>
+                       <td>${solution.content}</td>
+                       <td>
+                            <div class="m-btn-group m-btn-group--pill btn-group" role="group" aria-label="First group">
+                                <button type="button" class="m-btn btn btn-sm btn-danger" data-id="${$solution.id }" title="Supprimer"><i class="fa fa-times"></i></button>
+                                <button type="button" class="m-btn btn btn-sm btn-info" data-id="${$solution.id }" title="Modifier"><i class="far fa-edit"></i></button>
+                            </div>
+                       </td>
+                   </tr>`;
             });
-            solution_table.destroy();
-            $('.table tbody').empty();
-            $('.table tbody').html(rows);
-            initDataTable();
+            initDataTable(rows);
         },
         error: function (response) {
             console.log(response);
@@ -63,7 +65,7 @@ $(document).ready(function () {
                 getSolutions();
             },
             error: function (response) {
-                console.log(response);
+                //console.log(response);
                 var errors = "";
                 if (response.status == 422) {
                     $.each(response.responseJSON.errors, function (field, error) {
@@ -94,7 +96,7 @@ $(document).ready(function () {
                 $('#update-solution').modal('toggle');
             },
             error: function (response) {
-                console.log(response);
+                //console.log(response);
                 var errors = "";
                 if (response.status == 404) {
                     errors = "Solution not found";
@@ -118,12 +120,12 @@ $(document).ready(function () {
             dataType: 'json',
             data: formData,
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 swal("Done", "solution updated successfully !", "success");
                 getSolutions();
             },
             error: function (response) {
-                console.log(response);
+                //console.log(response);
                 var errors = "";
                 if (response.status == 422) {
                     $.each(response.responseJSON.errors, function (field, error) {
@@ -159,10 +161,9 @@ $(document).ready(function () {
                         success: function (data) {
                             swal("Done", "Solution deleted successfully !", "success");
                             getSolutions();
-
                         },
                         error: function (response) {
-                            console.log(response);
+                            //console.log(response);
                             var errors = "";
                             if (response.status == 500) {
                                 errors = "Message: " + response.responseJSON.message +

@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('dd', function ($expression) {
             return "<?php dd($expression);  ?>";
         });
+
+        Blade::component('layouts.partials.breadcrumb', 'breadcrumb');
     }
 
     /**

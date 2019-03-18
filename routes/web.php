@@ -12,7 +12,6 @@
 */
 
 
-
 Route::group(['middleware' => ['auth']], function () {
     
     Route::get('/', 'HomeController')->name('dashboard');
@@ -34,6 +33,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('/problems', 'ProblemController');
         Route::resource('/solutions', 'SolutionController');
         Route::get('/issues','IssueController@index')->name('issues.index');
+        Route::get('/issues/list','IssueController@list')->name('issues.list');
         Route::get('/issues/images','IssueController@images')->name('issues.images');
         Route::post('/issues','IssueController@store')->name('issues.store');
         Route::post('/issues/final-step/{id}','IssueController@finalUpdate')->name('issues.finalupdate');

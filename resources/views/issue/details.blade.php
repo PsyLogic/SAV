@@ -17,12 +17,12 @@
                     <h3 class="title">Issue Delivered</h3>
                     <p class="description">
                         <div class="card" >
-                                <div class="card-header text-center text-uppercase bg-info text-white">
-                                    More Information
-                                </div>
-                                <div class="card-body">
-                                    <b>Issue Delivered From: </b> <span class="">{{$issue->commercial->full_name}}</span>
-                                </div>
+                            <div class="card-header text-center text-uppercase bg-info text-white">
+                                More Information
+                            </div>
+                            <div class="card-body">
+                                <b>Issue Delivered From: </b> <span class="">{{$issue->commercial->full_name}}</span>
+                            </div>
                         </div>
                     </p>
                 </div>

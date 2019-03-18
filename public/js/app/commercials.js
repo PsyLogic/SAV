@@ -6,12 +6,14 @@ var url_commercial = "/commercials"
 var commercials_table = null;
 var id = null;
 
-function initDataTable(){
+function initDataTable(newData){
     // destroy and Initial table with datatable if it is initialized
-    if(commercials_table){
+    if(newData !== undefined){
         commercials_table.destroy();
+        $('.table tbody').empty();
+        $('.table tbody').html(newData);
     }
-    commercials_table =  $('.table').DataTable();
+    commercials_table =  $('.table').DataTable({responsive:true});
 }
 
 /**
@@ -26,24 +28,23 @@ function getCommercials() {
         success: function (data) {
             var rows = '';
             $.each(data, function (i, commercial) {
-                rows += '\
-                   <tr>\
-                       <th scope="row">' + (i + 1) + '</th>\
-                       <td>' + commercial.full_name + '</td>\
-                       <td>' + commercial.phone + '</td>\
-                       <td>' + commercial.belong_to + '</td>\
-                       <td>\
-                       <button type="button" class="btn btn-danger" data-id="' + commercial.id + '" title="Delete"><i class="fa fa-times"></i></button>\
-                       <button type="button" class="btn btn-info" data-id="' + commercial.id + '" title="Edit"><i class="far fa-edit"></i></button>\
-                       </td>\
-                   </tr>\
-                   ';
+                rows += `
+                   <tr>
+                       <td>${commercial.full_name}</td>
+                       <td>${commercial.phone}</td>
+                       <td>${commercial.belong_to}</td>
+                       <td>
+                            <div class="m-btn-group m-btn-group--pill btn-group" role="group" aria-label="First group">
+                                <button type="button" class="m-btn btn btn-sm btn-danger" data-id="${commercial.id}" title="Delete"><i class="fa fa-times"></i></button>
+                                <button type="button" class="m-btn btn btn-sm btn-info" data-id="${commercial.id}" title="Edit"><i class="far fa-edit"></i></button>
+                            </div>
+                        </td>
+                   </tr>`;
             });
-            $('.table tbody').html(rows);
-            initDataTable();
+            initDataTable(rows);
         },
         error: function (response) {
-            console.log(response);
+            //console.log(response);
         }
     });
 }
@@ -62,14 +63,14 @@ $(document).ready(function () {
             dataType: 'json',
             data: formData,
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 swal("Done", "Commercial added successfully !", "success");
                 $('#add-frm-commercial :input').val('');
                 getCommercials();
             },
             error: function (response) {
                 var errors = "";
-                console.log(response);
+                //console.log(response);
                 if (response.status == 422) {
                     $.each(response.responseJSON.errors, function (field, error) {
                         errors += "- " + error[0] + "\n";
@@ -100,7 +101,7 @@ $(document).ready(function () {
                 $('#update-commercial').modal('toggle');
             },
             error: function (response) {
-                console.log(response);
+                //console.log(response);
                 var errors = "";
                 if (response.status == 404) {
                     errors = "Commercial not found";
@@ -124,12 +125,12 @@ $(document).ready(function () {
             dataType: 'json',
             data: formData,
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 swal("Done", "Commercial updated successfully !", "success");
                 getCommercials();
             },
             error: function (response) {
-                console.log(response);
+                //console.log(response);
                 var errors = "";
                 if (response.status == 422) {
                     $.each(response.responseJSON.errors, function (field, error) {
@@ -163,12 +164,12 @@ $(document).ready(function () {
                         url: url_commercial + '/' + id,
                         dataType: 'json',
                         success: function (data) {
-                            console.log(data);
+                           //console.log(data);
                             swal("Done", "Commercial deleted successfully !", "success");
                             getCommercials();
                         },
                         error: function (response) {
-                            console.log(response);
+                            //console.log(response);
                             var errors = "";
                             if (response.status == 500) {
                                 errors = "Message: " + response.responseJSON.message +
@@ -182,10 +183,5 @@ $(document).ready(function () {
                     });
                 }
             });
-
-
-
     });
-
-
 });

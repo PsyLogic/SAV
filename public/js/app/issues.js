@@ -34,11 +34,13 @@ function disableLoading(element, html='<i class="far fa-edit"></i> Update'){
 }
 
 
-function initDataTable(){
+function initDataTable(newData){
 
     // destroy and Initial table with datatable if it is initialized
-    if(listIssuesTable){
+    if(newData !== undefined){
         listIssuesTable.destroy();
+        $('.table tbody').empty();
+        $('.table tbody').html(newData);
     }
     
     listIssuesTable =  $('.table').DataTable({
@@ -66,6 +68,11 @@ function initDataTable(){
                 className:'btn btn-success btn-sm float-right ml-2',
                 exportOptions: {
                     columns: ':visible'
+                },
+                customize: function ( win ) {
+                    // Todo Remove Phone number from Owen and Commercial 
+                    // when printing the list
+                    //$(win.document.body).find("a.btn-togg");
                 }
             }
         ],
@@ -104,14 +111,29 @@ function initDataTable(){
     //$('.dataTable td').css('padding','0.2em');
 
     var toggleColumns = '';
+    
     // Add Toggle for table
     $('.table thead tr:eq(0) th').each( function (i) {
         var title = $(this).text();
         if(i==6)
             title = 'Request';
-        toggleColumns += '<a href="" class="btn btn-outline-dark toggle-vis" data-column="'+i+'">'+title+'</a>';
+        toggleColumns += '<a class="btn m-btn m-btn--square btn-outline-brand btn-sm toggle-vis" data-column="'+i+'">'+title+'</a>';
     } );
-    $('.toggle-group').html(toggleColumns);
+    $htmlToggleColumns=`
+    <div class="col-lg-8 text-center">
+        <div class="btn-group-sm btn-group flex-wrap" role="group" aria-label="Toolbar with button groups">
+            ${toggleColumns}
+        </div>
+    </div>
+    `;
+    $('.toggle-buttons').html($htmlToggleColumns);
+
+
+    // Initialize Tooltip for responsive and ajax call
+    $("body").tooltip({
+        selector: '[data-toggle="m-tooltip"]',
+        container: 'body'
+    });
 }
 
 /**
@@ -121,55 +143,52 @@ function initDataTable(){
 function getIssues() {
     $.ajax({
         type: 'GET',
-        url: url_issue,
+        url: url_issue+'/list',
         dataType: 'json',
         success: function (data) {
-
             var rows = '';
-            $.each(data, function (i, issue) {
-                rows += '\
-                   <tr id="row'+issue.id+'">\
-                       <td>' + issue.delivered_at + '</td>\
-                       <td>' + issue.client["model"] + '</td>\
-                       <td>' + (issue.imei || "999999999999999") + '</td>\
-                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-left" role="button" data-toggle="tooltip" data-placement="right" title="'+issue.client["tel"]+'"><i class="fas fa-info-circle"></i></a><span class="">' + issue.client["full_name"] + '</span></td>\
-                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-right" role="button" data-toggle="tooltip" data-placement="right" title="'+issue.commercial.phone+'"><i class="fas fa-info-circle"></i></a><span class="">' + issue.commercial.full_name + '</span></td>\
-                       <td>' + (issue.user ? issue.user.name : "Not Assigned") + '</td>\
-                       <td>' + stageProcess(issue.stage) + '</td>\
-                       <td>' + (issue.diagnostic || "----") + '</td>\
-                       <td>\
-                           <div class="btn-group">';
-                if (issue.stage == 1)
-                    rows += '<button type="button" class="btn btn-secondary btn-md btn-fix" data-stage="' + issue.stage + '" data-id="' + issue.id + '" title="Fix"><i class="fas fa-wrench"></i></button>';
-                if (issue.stage == 2) {
-                    rows += '<button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\
-                                       <i class="fas fa-wrench"></i>\
-                                   </button>\
-                                   <div class="dropdown-menu">\
-                                       <a class="dropdown-item btn-fix" href="#" data-stage="' + issue.stage + '" data-id="' + issue.id + '" title="software" >Software</a>\
-                                       <a class="dropdown-item btn-fix" href="#" data-stage="' + issue.stage + '" data-id="' + issue.id + '" title="hardware" >Hardware</a>\
-                                   </div>';
+            $.each(data.data, function (i, issue) {
+                rows += `
+                   <tr id="row${issue.id}">
+                       <td>${issue.delivered_at}</td>
+                       <td>${issue.client.model}</td>
+                       <td>${(issue.imei || "999999999999999")}</td>
+                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-left btn-togg" role="button" data-skin="dark" data-toggle="m-tooltip" data-placement="top" data-container="body" data-html="true" title="<code><b>${issue.client.tel}</b></code>"><i class="fas fa-info-circle"></i></a><span class="">${issue.client.full_name}</span></td>
+                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-right btn-togg" role="button" data-skin="dark" data-toggle="m-tooltip" data-placement="top" data-container="body" data-html="true" title="<code><b>${issue.commercial_phone}</b></code>"><i class="fas fa-info-circle"></i></a><span class="">${issue.commercial_name}</span></td>
+                       <td>${(issue.user_name ? issue.user_name : "Not Assigned")}</td>
+                       <td>${stageProcess(issue.stage)}</td>
+                       <td>${(issue.diagnostic || "----")}</td>
+                       <td>
+                           <div class="btn-group">`;
+                        if (issue.stage == 1)
+                            rows += `<button type="button" class="btn btn-metal btn-sm btn-fix" data-stage="${issue.stage}" data-id="${issue.id}" title="Fix"><i class="fas fa-wrench"></i></button>`;
+                        if (issue.stage == 2) {
+                            rows += `<button type="button" class="btn btn-metal btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                       <i class="fas fa-wrench"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item btn-fix" href="#" data-stage="${issue.stage}" data-id="${issue.id}" title="software" >Software</a>
+                                <a class="dropdown-item btn-fix" href="#" data-stage="${issue.stage}" data-id="${issue.id}" title="hardware" >Hardware</a>
+                            </div>`;
                 }
-                rows += '&nbsp;<a href="/issues/' + issue.id + '" class="btn btn-primary btn-md" data-id="{{$issue->id}}" title="Details"><i class="fas fa-info-circle"></i></a>';
+                rows += `<a href="/issues/${issue.id}" class="btn btn-primary btn-sm" data-id="${issue.id}" title="Details">&nbsp;<i class="fas fa-info"></i>&nbsp;</a>`;
                 if(issue.stage == 3){
-                    rows += '<a href="/issues/' + issue.id + '" class="btn btn-warning btn-md btn-del" data-id="{{$issue->id}}" title="Report"><i class="fas fa-times"></i></a>';
-                }           
+                    rows += `<a href="/issues/report/${issue.id}" target="_blank" class="btn btn-warning btn-sm" data-id="${issue.id}" title="Report"><i class="fas fa-print"></i></a>`;
+                }
+                if(issue.user_super){
+                    rows += `<a href="#" class="btn btn-danger btn-sm btn-del" data-id="${issue.id}" title="Delete"><i class="fas fa-times"></i></a>`;
+                }      
                 rows +='</div>\
                        </td>\
                    </tr>';
             });
-            $('.table tbody').html(rows);
-            //console.log('Heere');
-            
-            initDataTable();
+            initDataTable(rows);
         },
         error: function (response) {
-            console.log(response);
+            //console.log(response);
         }
     });
 }
-// getIssues();
-
 
 function updateToStage3(formId) {
     ableLoading($('.btn-submit'));
@@ -194,7 +213,7 @@ function updateToStage3(formId) {
             ableLoading($('.btn-submit'));
         },
         error: function (response) {
-            console.log(response);
+            //console.log(response);
             var errors = "";
             if (response.status == 404) {
                 errors = response.responseJSON.message;
@@ -217,13 +236,15 @@ function updateToStage3(formId) {
 }
 
 $(document).ready(function () {
+
     // Init Multi select inputs
     $('.fastsearch').select2();
 
+    getIssues();
     initDataTable();
-
+    
     // Toggle Columns
-    $('a.toggle-vis').on( 'click', function (e) {
+    $('body').on( 'click', 'a.toggle-vis', function (e) {
         e.preventDefault();
  
         // Get the column API object
@@ -272,7 +293,7 @@ $(document).ready(function () {
                     disableLoading($('.btn-submit'))
                 },
                 error: function (response) {
-                    console.log(response);
+                    //console.log(response);
                     var errors = "";
                     if (response.status == 404) {
                         errors = response.responseJSON.message;
@@ -298,7 +319,7 @@ $(document).ready(function () {
         var diagnostic = $(this).text(); // Type of the problem (software or hadware)
         $('.client-permission').hide();
 
-        console.log(imei);
+        //console.log(imei);
         $('.input-imei-stage-3').val(imei);
         if(imei == "999999999999999"){
             $('.input-imei-stage-3').removeAttr('readonly');
@@ -388,7 +409,7 @@ $(document).ready(function () {
 
                         },
                         error: function (response) {
-                            console.log(response);
+                            //console.log(response);
                             var errors = "";
                             if (response.status == 500) {
                                 errors = "Message: " + response.responseJSON.message +

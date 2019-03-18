@@ -7,12 +7,14 @@ var problems_table= null;
 var id = null;
 
 
-function initDataTable(){
+function initDataTable(newData){
     // destroy and Initial table with datatable if it is initialized
-    if(problems_table){
+    if(newData !== undefined){
         problems_table.destroy();
+        $('.table tbody').empty();
+        $('.table tbody').html(newData);
     }
-    problems_table =  $('.table').DataTable();
+    problems_table =  $('.table').DataTable({ responsive: true });
 }
 
 
@@ -30,24 +32,22 @@ function getProblems() {
             var eligibility = "";
             $.each(data, function (i, problem) {
                 eligibility = problem.eligibility ? 'Yes' : 'No';
-                rows += '\
-                   <tr>\
-                       <th scope="row">' + (i + 1) + '</th>\
-                       <td>' + problem.content + '</td>\
-                       <td>' + eligibility + '</td>\
-                       <td>\
-                           <button type="button" class="btn btn-danger" data-id="' + problem.id + '" title="Delete"><i class="fa fa-times"></i></button>\
-                           <button type="button" class="btn btn-info" data-id="' + problem.id + '" title="Edit"><i class="far fa-edit"></i></button>\
-                       </td>\
-                   </tr>\
-                   ';
+                rows += `
+                   <tr>
+                       <td>${problem.content}</td>
+                       <td>${eligibility}</td>
+                       <td>
+                            <div class="m-btn-group m-btn-group--pill btn-group" role="group" aria-label="First group">
+                                <button type="button" class="m-btn btn btn-danger btn-sm" data-id="${problem.id}" title="Supprimer"><i class="fa fa-times"></i></button>
+                                <button type="button" class="m-btn btn btn-info btn-sm" data-id="${problem.id}" title="Modifier"><i class="far fa-edit"></i></button>
+                            </div>    
+                       </td>
+                   </tr>`;
             });
-            $('.table tbody').html(rows);
-
-            initDataTable();
+            initDataTable(rows);
         },
         error: function (response) {
-            console.log(response);
+            // console.log(response);
         }
     });
 }
@@ -70,7 +70,7 @@ $(document).ready(function () {
                 getProblems();
             },
             error: function (response) {
-                console.log(response);
+                //console.log(response);
                 var errors = "";
                 if (response.status == 422) {
                     $.each(response.responseJSON.errors, function (field, error) {
@@ -106,7 +106,7 @@ $(document).ready(function () {
                 $('#update-problem').modal('toggle');
             },
             error: function (response) {
-                console.log(response);
+               //console.log(response);
                 var errors = "";
                 if (response.status == 404) {
                     errors = "Problem not found";
@@ -130,12 +130,12 @@ $(document).ready(function () {
             dataType: 'json',
             data: formData,
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 swal("Done", "problem updated successfully !", "success");
                 getProblems();
             },
             error: function (response) {
-                console.log(response);
+                //console.log(response);
                 var errors = "";
                 if (response.status == 422) {
                     $.each(response.responseJSON.errors, function (field, error) {
@@ -169,12 +169,12 @@ $(document).ready(function () {
                         url: url_problem + '/' + id,
                         dataType: 'json',
                         success: function (data) {
-                            console.log(data);
+                            //console.log(data);
                             swal("Done", "Problem deleted successfully !", "success");
                             getProblems();
                         },
                         error: function (response) {
-                            console.log(response);
+                            //console.log(response);
                             var errors = "";
                             if (response.status == 500) {
                                 errors = "Message: " + response.responseJSON.message +
