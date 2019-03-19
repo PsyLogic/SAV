@@ -14,9 +14,32 @@ function initDataTable(newData){
         $('.table tbody').empty();
         $('.table tbody').html(newData);
     }
-    problems_table =  $('.table').DataTable({ responsive: true });
+    problems_table =  $('.table').DataTable({
+        responsive: true,
+        stateSave: true,
+        "columnDefs": [ {
+            "targets": '_all',
+            "orderable": false
+        }],
+    });
 }
 
+function raiseError(response){
+    var errors = "";
+    if (response.status == 404) {
+        errors = "Problem not found";
+    }
+    else if (response.status == 422) {
+        $.each(response.responseJSON.errors, function (field, error) {
+            errors += "- " + error[0] + "\n";
+        });
+    } else if (response.status == 500) {
+        errors = "Message: " + response.responseJSON.message +
+            "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
+
+    }
+    swal("Error", errors, "error");
+}
 
 /**
  *  Return list of Problems 
@@ -47,7 +70,7 @@ function getProblems() {
             initDataTable(rows);
         },
         error: function (response) {
-            // console.log(response);
+            raiseError(response);
         }
     });
 }
@@ -70,18 +93,7 @@ $(document).ready(function () {
                 getProblems();
             },
             error: function (response) {
-                //console.log(response);
-                var errors = "";
-                if (response.status == 422) {
-                    $.each(response.responseJSON.errors, function (field, error) {
-                        errors += "- " + error[0] + "\n";
-                    });
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                }
-                swal("Error", errors, "error");
+                raiseError(response);
             }
         });
 
@@ -106,16 +118,7 @@ $(document).ready(function () {
                 $('#update-problem').modal('toggle');
             },
             error: function (response) {
-               //console.log(response);
-                var errors = "";
-                if (response.status == 404) {
-                    errors = "Problem not found";
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                }
-                swal("Error", "Error occured: \n" + errors, "error");
+                raiseError(response);
             }
         });
     });
@@ -129,24 +132,13 @@ $(document).ready(function () {
             url: url_problem + '/' + id,
             dataType: 'json',
             data: formData,
-            success: function (data) {
-                //console.log(data);
+            success: function () {
+                $('#update-problem').modal('toggle');
                 swal("Done", "problem updated successfully !", "success");
                 getProblems();
             },
             error: function (response) {
-                //console.log(response);
-                var errors = "";
-                if (response.status == 422) {
-                    $.each(response.responseJSON.errors, function (field, error) {
-                        errors += "- " + error[0] + "\n";
-                    });
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-                }
-
-                swal("Error", "Error occured: \n" + errors, "error");
+                raiseError(response);
             }
         });
 
@@ -154,7 +146,8 @@ $(document).ready(function () {
 
     // Delete Problem
     $('body').on('click', '.btn-danger', function () {
-        id = $(this).data('id');
+        $this = $(this);
+        id = $this.data('id');
         swal({
                 title: "Delete confirmation",
                 text: "Do you want to delete this Problem, we will keep it information for tracking reasons",
@@ -168,22 +161,12 @@ $(document).ready(function () {
                         type: 'DELETE',
                         url: url_problem + '/' + id,
                         dataType: 'json',
-                        success: function (data) {
-                            //console.log(data);
+                        success: function () {
                             swal("Done", "Problem deleted successfully !", "success");
-                            getProblems();
+                            $this.parentsUntil('tbody').fadeOut(500,function() { $(this).remove() });
                         },
                         error: function (response) {
-                            //console.log(response);
-                            var errors = "";
-                            if (response.status == 500) {
-                                errors = "Message: " + response.responseJSON.message +
-                                    "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                            } else if (response.status == 404) {
-                                errors = "Problem Not Found";
-                            }
-                            swal("Error", errors, "error");
+                            raiseError(response);
                         }
                     });
                 }

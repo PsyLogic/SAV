@@ -33,7 +33,6 @@ function disableLoading(element, html='<i class="far fa-edit"></i> Update'){
     element.prop('disabled',false);
 }
 
-
 function initDataTable(newData){
 
     // destroy and Initial table with datatable if it is initialized
@@ -69,10 +68,10 @@ function initDataTable(newData){
                 exportOptions: {
                     columns: ':visible'
                 },
-                customize: function ( win ) {
+                customize: function ( window ) {
                     // Todo Remove Phone number from Owen and Commercial 
                     // when printing the list
-                    //$(win.document.body).find("a.btn-togg");
+                    //console.log($(window.document.body).find('table').css('background-color','#000'));
                 }
             }
         ],
@@ -84,6 +83,8 @@ function initDataTable(newData){
             "orderable": false
           } ],
           "order": [[ 0, "desc" ]],
+          "lengthMenu": [ 5, 10, 25, 50 ],
+          "autoWidth": false,
           initComplete: function () {
   
               var column = this.api().column(6);
@@ -136,6 +137,23 @@ function initDataTable(newData){
     });
 }
 
+function raiseError(response){
+    var errors = "";
+    if (response.status == 404) {
+        errors = response.responseJSON.message;
+    } else if (response.status == 422) {
+        $.each(response.responseJSON.errors, function (field, error) {
+            errors += "- " + error[0] + "\n";
+        });
+    } else if (response.status == 412) {
+        errors = response.responseJSON.message;
+    } else if (response.status == 500) {
+        errors = "Message: " + response.responseJSON.message +
+            "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
+    }
+    swal("Error", errors, "error");
+}
+
 /**
  *  @returns list of issues 
  * 
@@ -185,7 +203,7 @@ function getIssues() {
             initDataTable(rows);
         },
         error: function (response) {
-            //console.log(response);
+            raiseError(response);
         }
     });
 }
@@ -195,7 +213,6 @@ function updateToStage3(formId) {
 
     // Sumbit the form of stage 3
     var formData = new FormData($('#' + formId)[0]);
-    // console.log(formData);
     $.ajax({
         type: 'POST',
         url: url_issue + '/final-step/' + id,
@@ -204,34 +221,19 @@ function updateToStage3(formId) {
         contentType: false,
         processData: false,
         data: formData,
-        success: function (data) {
-            // console.log(data);
+        success: function () {
             swal("Done", "The phone is fixed and the issue is closed, Thank you!", "success");
-            getIssues();
-            $('#' + formId + ' :input').val('');
+            $("#"+formId)[0].reset();
+            // $('#' + formId + ' :input').val('');
             $('#update-to-stage-' + (stage + 1)).modal('toggle');
-            ableLoading($('.btn-submit'));
+            disableLoading($('.btn-submit'));
+            getIssues();
         },
         error: function (response) {
-            //console.log(response);
-            var errors = "";
-            if (response.status == 404) {
-                errors = response.responseJSON.message;
-            } else if (response.status == 422) {
-                $.each(response.responseJSON.errors, function (field, error) {
-                    errors += "- " + error[0] + "\n";
-                });
-            } else if (response.status == 412) {
-                errors = response.responseJSON.message;
-            } else if (response.status == 500) {
-                errors = "Message: " + response.responseJSON.message +
-                    "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-            }
-            swal("Error", errors, "error");
+            raiseError(response);
             disableLoading($('.btn-submit'));
         }
     });
-
     return false;
 }
 
@@ -240,7 +242,6 @@ $(document).ready(function () {
     // Init Multi select inputs
     $('.fastsearch').select2();
 
-    getIssues();
     initDataTable();
     
     // Toggle Columns
@@ -268,7 +269,6 @@ $(document).ready(function () {
             e.preventDefault();
             e.stopImmediatePropagation();
 
-            
             if (isNaN($('#update_imei').val()) || ($('#update_imei').val() != '' && $('#update_imei').val().length != 15)) {
                 alert('IMEI must be a valid of 15 number');
                 return;
@@ -285,7 +285,6 @@ $(document).ready(function () {
                 processData: false,
                 data: formData,
                 success: function (data) {
-                    // console.log(data);
                     swal("Done", "Reparation request is in process right now", "success");
                     getIssues();
                     $('#update-frm-to-stage-2 :input').val('');
@@ -293,21 +292,7 @@ $(document).ready(function () {
                     disableLoading($('.btn-submit'))
                 },
                 error: function (response) {
-                    //console.log(response);
-                    var errors = "";
-                    if (response.status == 404) {
-                        errors = response.responseJSON.message;
-                    } else if (response.status == 422) {
-                        $.each(response.responseJSON.errors, function (field, error) {
-                            errors += "- " + error[0] + "\n";
-                        });
-                    } else if (response.status == 412) {
-                        errors = response.responseJSON.message;
-                    } else if (response.status == 500) {
-                        errors = "Message: " + response.responseJSON.message +
-                            "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-                    }
-                    swal("Error", errors, "error");
+                    raiseError(response);
                     disableLoading($('.btn-submit'))
                 }
 
@@ -319,7 +304,6 @@ $(document).ready(function () {
         var diagnostic = $(this).text(); // Type of the problem (software or hadware)
         $('.client-permission').hide();
 
-        //console.log(imei);
         $('.input-imei-stage-3').val(imei);
         if(imei == "999999999999999"){
             $('.input-imei-stage-3').removeAttr('readonly');
@@ -385,8 +369,8 @@ $(document).ready(function () {
      */
 
      $('body').on('click','.btn-del',function(e){
-         e.preventDefault();
-         e.stopPropagation();
+        e.preventDefault();
+        e.stopPropagation();
         id = $(this).data('id');
         row = $('#row'+id);
         swal({
@@ -404,28 +388,15 @@ $(document).ready(function () {
                         dataType: 'json',
                         success: function (data) {
                             swal("Done", "Problem deleted successfully !", "success");
-                            // getIssues();
                             row.fadeOut(1000, function(){ $(this).remove();});
-
                         },
                         error: function (response) {
-                            //console.log(response);
-                            var errors = "";
-                            if (response.status == 500) {
-                                errors = "Message: " + response.responseJSON.message +
-                                    "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                            } else if (response.status == 404) {
-                                errors = "Problem Not Found";
-                            }
-                            swal("Error", errors, "error");
+                            raiseError(response);
                         }
                     });
                 }
             });
-
             return false;
-
      });
 
     /**

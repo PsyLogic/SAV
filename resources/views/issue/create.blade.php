@@ -101,13 +101,11 @@
                 dataType: 'json',
                 data: formData,
                 success: function (data) {
-                    console.log(data);
                     swal("Done", "Reparation request is sent successfully", "success");
                     $('#add-frm-issue :input').val('');
                     disableLoading($('.btn-submit'));
                 },
                 error: function(response){
-                    console.log(response);
                     var errors="";
                     if(response.status == 404){
                         errors = response.responseJSON.message;

@@ -13,7 +13,31 @@ function initDataTable(newData){
         $('.table tbody').empty();
         $('.table tbody').html(newData);
     }
-    commercials_table =  $('.table').DataTable({responsive:true});
+    commercials_table =  $('.table').DataTable({
+        responsive: true,
+        stateSave: true,
+        "columnDefs": [ {
+            "targets": '_all',
+            "orderable": false
+        }],
+    });
+}
+
+function raiseError(response){
+    var errors = "";
+    if (response.status == 404) {
+        errors = "Commercial not found";
+    }
+    else if (response.status == 422) {
+        $.each(response.responseJSON.errors, function (field, error) {
+            errors += "- " + error[0] + "\n";
+        });
+    } else if (response.status == 500) {
+        errors = "Message: " + response.responseJSON.message +
+            "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
+
+    }
+    swal("Error", errors, "error");
 }
 
 /**
@@ -44,7 +68,7 @@ function getCommercials() {
             initDataTable(rows);
         },
         error: function (response) {
-            //console.log(response);
+            raiseError(response);
         }
     });
 }
@@ -62,24 +86,13 @@ $(document).ready(function () {
             url: url_commercial,
             dataType: 'json',
             data: formData,
-            success: function (data) {
-                //console.log(data);
+            success: function () {
                 swal("Done", "Commercial added successfully !", "success");
                 $('#add-frm-commercial :input').val('');
                 getCommercials();
             },
             error: function (response) {
-                var errors = "";
-                //console.log(response);
-                if (response.status == 422) {
-                    $.each(response.responseJSON.errors, function (field, error) {
-                        errors += "- " + error[0] + "\n";
-                    });
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                }
+                raiseError(response);
             }
         });
 
@@ -101,16 +114,7 @@ $(document).ready(function () {
                 $('#update-commercial').modal('toggle');
             },
             error: function (response) {
-                //console.log(response);
-                var errors = "";
-                if (response.status == 404) {
-                    errors = "Commercial not found";
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                }
-                swal("Error", "Error occured: \n" + errors, "error");
+                raiseError(response);
             }
         });
     });
@@ -124,24 +128,13 @@ $(document).ready(function () {
             url: url_commercial + '/' + id,
             dataType: 'json',
             data: formData,
-            success: function (data) {
-                //console.log(data);
+            success: function () {
+                $('#update-commercial').modal('toggle');
                 swal("Done", "Commercial updated successfully !", "success");
                 getCommercials();
             },
             error: function (response) {
-                //console.log(response);
-                var errors = "";
-                if (response.status == 422) {
-                    $.each(response.responseJSON.errors, function (field, error) {
-                        errors += "- " + error[0] + "\n";
-                    });
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-                }
-
-                swal("Error", "Error occured: \n" + errors, "error");
+                raiseError(response);
             }
         });
 
@@ -149,7 +142,8 @@ $(document).ready(function () {
 
     // Delete Commercial
     $('body').on('click', '.btn-danger', function () {
-        id = $(this).data('id');
+        $this = $(this);
+        id = $this.data('id');
         swal({
                 title: "Delete confirmation",
                 text: "Do you want to delete the commercial",
@@ -164,21 +158,11 @@ $(document).ready(function () {
                         url: url_commercial + '/' + id,
                         dataType: 'json',
                         success: function (data) {
-                           //console.log(data);
+                            $this.parentsUntil('tbody').fadeOut(500,function() { $(this).remove() });
                             swal("Done", "Commercial deleted successfully !", "success");
-                            getCommercials();
                         },
                         error: function (response) {
-                            //console.log(response);
-                            var errors = "";
-                            if (response.status == 500) {
-                                errors = "Message: " + response.responseJSON.message +
-                                    "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                            } else if (response.status == 404) {
-                                errors = "Commercial Not Found";
-                            }
-                            swal("Error", errors, "error");
+                            raiseError(response);
                         }
                     });
                 }

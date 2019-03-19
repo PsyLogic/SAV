@@ -1,10 +1,10 @@
 @extends('layouts.main')
 @section('title', 'List of Requests')
-@section('breadcrumb')
+{{--  @section('breadcrumb')
     @breadcrumb(['title' => 'Issues'])
         List of issues
     @endbreadcrumb    
-@endsection
+@endsection  --}}
 @section('css')
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <style>
@@ -12,6 +12,9 @@
         text-align: center;
         font-size:16px;
         padding: 0.3rem;
+    }
+    @media print {
+        .btn-togg { display: none !important; } 
     }
 </style>
 @endsection
@@ -33,7 +36,7 @@
             </div>
             <div class="m-portlet__body">
                 <div class="row justify-content-center toggle-buttons"></div>
-                <table class="table table-bordered display compact dt-responsive" style="width:100%">
+                <table class="table table-striped table-bordered table-hover display compact dt-responsive" style="width:100%">
                     <thead class="thead-dark">
                         <tr>
                         <th scope="col">Created at</th>

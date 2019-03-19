@@ -36,11 +36,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/issues/list','IssueController@list')->name('issues.list');
         Route::get('/issues/images','IssueController@images')->name('issues.images');
         Route::post('/issues','IssueController@store')->name('issues.store');
-        Route::post('/issues/final-step/{id}','IssueController@finalUpdate')->name('issues.finalupdate');
-        Route::get('/issues/report/{id}','IssueController@report')->name('issues.report');
-        Route::get('/issues/{id}','IssueController@show')->name('issues.details');
-        Route::post('/issues/{id}','IssueController@update')->name('issues.update');
-        Route::delete('/issues/{id}','IssueController@destroy')->name('issues.delete');
+        Route::post('/issues/final-step/{issue}','IssueController@finalUpdate')->name('issues.finalupdate');
+        Route::get('/issues/report/{issue}','IssueController@report')->name('issues.report');
+        Route::get('/issues/{issue}','IssueController@show')->name('issues.details');
+        Route::post('/issues/{issue}','IssueController@update')->name('issues.update');
+        Route::delete('/issues/{issue}','IssueController@destroy')->name('issues.delete');
 
     });    
 });

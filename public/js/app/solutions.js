@@ -13,7 +13,31 @@ function initDataTable(newData){
         $('.table tbody').empty();
         $('.table tbody').html(newData);
     }
-    solution_table = $(".table").DataTable({responsive: true});
+    solution_table = $(".table").DataTable({
+        responsive: true,
+        stateSave: true,
+        "columnDefs": [ {
+            "targets": '_all',
+            "orderable": false
+        }],
+    });
+}
+
+function raiseError(response){
+    var errors = "";
+    if (response.status == 404) {
+        errors = "Solution not found";
+    }
+    else if (response.status == 422) {
+        $.each(response.responseJSON.errors, function (field, error) {
+            errors += "- " + error[0] + "\n";
+        });
+    } else if (response.status == 500) {
+        errors = "Message: " + response.responseJSON.message +
+            "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
+
+    }
+    swal("Error", errors, "error");
 }
 
 
@@ -34,8 +58,8 @@ function getSolutions() {
                        <td>${solution.content}</td>
                        <td>
                             <div class="m-btn-group m-btn-group--pill btn-group" role="group" aria-label="First group">
-                                <button type="button" class="m-btn btn btn-sm btn-danger" data-id="${$solution.id }" title="Supprimer"><i class="fa fa-times"></i></button>
-                                <button type="button" class="m-btn btn btn-sm btn-info" data-id="${$solution.id }" title="Modifier"><i class="far fa-edit"></i></button>
+                                <button type="button" class="m-btn btn btn-sm btn-danger" data-id="${solution.id }" title="Supprimer"><i class="fa fa-times"></i></button>
+                                <button type="button" class="m-btn btn btn-sm btn-info" data-id="${solution.id }" title="Modifier"><i class="far fa-edit"></i></button>
                             </div>
                        </td>
                    </tr>`;
@@ -43,7 +67,7 @@ function getSolutions() {
             initDataTable(rows);
         },
         error: function (response) {
-            console.log(response);
+            raiseError(response);
         }
     });
 }
@@ -65,18 +89,7 @@ $(document).ready(function () {
                 getSolutions();
             },
             error: function (response) {
-                //console.log(response);
-                var errors = "";
-                if (response.status == 422) {
-                    $.each(response.responseJSON.errors, function (field, error) {
-                        errors += "- " + error[0] + "\n";
-                    });
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                }
-                swal("Error", errors, "error");
+                raiseError(response);                
             }
         });
 
@@ -96,16 +109,7 @@ $(document).ready(function () {
                 $('#update-solution').modal('toggle');
             },
             error: function (response) {
-                //console.log(response);
-                var errors = "";
-                if (response.status == 404) {
-                    errors = "Solution not found";
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                }
-                swal("Error", "Error occured: \n" + errors, "error");
+                raiseError(response);
             }
         });
     });
@@ -120,23 +124,12 @@ $(document).ready(function () {
             dataType: 'json',
             data: formData,
             success: function (data) {
-                //console.log(data);
+                $('#update-solution').modal('toggle');
                 swal("Done", "solution updated successfully !", "success");
                 getSolutions();
             },
             error: function (response) {
-                //console.log(response);
-                var errors = "";
-                if (response.status == 422) {
-                    $.each(response.responseJSON.errors, function (field, error) {
-                        errors += "- " + error[0] + "\n";
-                    });
-                } else if (response.status == 500) {
-                    errors = "Message: " + response.responseJSON.message +
-                        "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-                }
-
-                swal("Error", "Error occured: \n" + errors, "error");
+                raiseError(response);
             }
         });
 
@@ -144,7 +137,8 @@ $(document).ready(function () {
 
     // Delete Solution
     $('body').on('click', '.btn-danger', function () {
-        id = $(this).data('id');
+        $this = $(this);
+        id = $this.data('id');
         swal({
                 title: "Delete confirmation",
                 text: "Do you want to delete this Solution, we will keep it information for tracking reasons",
@@ -158,21 +152,12 @@ $(document).ready(function () {
                         type: 'DELETE',
                         url: url_solution + '/' + id,
                         dataType: 'json',
-                        success: function (data) {
+                        success: function () {
                             swal("Done", "Solution deleted successfully !", "success");
-                            getSolutions();
+                            $this.parentsUntil('tbody').fadeOut(500,function() { $(this).remove() });
                         },
                         error: function (response) {
-                            //console.log(response);
-                            var errors = "";
-                            if (response.status == 500) {
-                                errors = "Message: " + response.responseJSON.message +
-                                    "\nFile: " + response.responseJSON.file.split('\\').slice(-1)[0] + ":" + response.responseJSON.line;
-
-                            } else if (response.status == 404) {
-                                errors = "Solution Not Found";
-                            }
-                            swal("Error", errors, "error");
+                            raiseError(response);
                         }
                     });
                 }

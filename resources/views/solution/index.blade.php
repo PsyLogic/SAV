@@ -7,7 +7,7 @@
 @endsection
 @section('content')
 <div class="row justify-content-center">
-<div class="col-8">
+<div class="col-10">
     <div class="row">
         <div class="col-sm-12 col-lg-5">
             <div class="m-portlet m-portlet--creative m-portlet--first m-portlet--bordered-semi">
