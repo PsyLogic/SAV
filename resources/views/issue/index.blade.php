@@ -58,10 +58,10 @@
                             <td scope="row">{{ $issue->client['model'] }}</td>
                             <td>{{ $issue->imei ?? '999999999999999' }}</td>
                             <td class="text-center">
-                                <a tabindex="0" class="btn btn-sm text-left float-left btn-togg" role="button" data-skin="dark" data-toggle="m-tooltip" data-placement="top" data-html="true" title="<code><b>{{ $issue->client['tel'] }}</b></code>"><i class="fas fa-info-circle"></i></a><span title="{{ $issue->client['full_name'] }}">{{ str_limit($issue->client['full_name'],12) }}</span>
+                                <a tabindex="0" class="btn btn-sm text-left float-left btn-togg" role="button" data-toggle="m-tooltip" data-placement="top"  title="{{ $issue->client['tel'] }}"><i class="fas fa-info-circle"></i></a>{{ $issue->client['full_name'] }}
                             </td>
                             <td class="text-center">
-                                <a tabindex="0" class="btn btn-sm float-left btn-togg" role="button" data-skin="dark" data-toggle="m-tooltip" data-placement="top" data-html="true" title="<code><b>{{ $issue->commercial->phone }}</b></code>"><i class="fas fa-info-circle"></i></a><span title="{{ $issue->commercial->full_name,15 }}">{{ str_limit($issue->commercial->full_name,15) }}</span>
+                                <a tabindex="0" class="btn btn-sm float-left btn-togg" role="button" data-toggle="m-tooltip" data-placement="top"  title="{{ $issue->commercial->phone }}"><i class="fas fa-info-circle"></i></a>{{ $issue->commercial->full_name }}
                             </td>
                             <td>{{ $issue->user->name ?? 'Not Assigned' }}</td>
                             <td>{!! $issue->stage() !!}</td>

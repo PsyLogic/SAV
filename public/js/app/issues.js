@@ -71,7 +71,8 @@ function initDataTable(newData){
                 customize: function ( window ) {
                     // Todo Remove Phone number from Owen and Commercial 
                     // when printing the list
-                    //console.log($(window.document.body).find('table').css('background-color','#000'));
+                    // console.log($(window.document.body).find('table').css('background-color','#000'));
+                    // console.log(window.document.body.findElementBy);
                 }
             }
         ],
@@ -171,8 +172,8 @@ function getIssues() {
                        <td>${issue.delivered_at}</td>
                        <td>${issue.client.model}</td>
                        <td>${(issue.imei || "999999999999999")}</td>
-                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-left btn-togg" role="button" data-skin="dark" data-toggle="m-tooltip" data-placement="top" data-container="body" data-html="true" title="<code><b>${issue.client.tel}</b></code>"><i class="fas fa-info-circle"></i></a><span class="">${issue.client.full_name}</span></td>
-                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-right btn-togg" role="button" data-skin="dark" data-toggle="m-tooltip" data-placement="top" data-container="body" data-html="true" title="<code><b>${issue.commercial_phone}</b></code>"><i class="fas fa-info-circle"></i></a><span class="">${issue.commercial_name}</span></td>
+                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-left btn-togg" role="button" data-toggle="m-tooltip" data-placement="top" data-container="body" title="${issue.client.tel}"><i class="fas fa-info-circle"></i></a> ${issue.client.full_name}</td>
+                       <td class="text-center"><a tabindex="0" class="btn btn-sm float-right btn-togg" role="button" data-toggle="m-tooltip" data-placement="top" data-container="body" title="${issue.commercial_phone}"><i class="fas fa-info-circle"></i></a> ${issue.commercial_name}</td>
                        <td>${issue.user_name}</td>
                        <td>${stageProcess(issue.stage)}</td>
                        <td>${(issue.diagnostic || "----")}</td>
