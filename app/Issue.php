@@ -78,9 +78,15 @@ class Issue extends Model
     public function getDeliveredAtAttribute($value){
         return Carbon::parse($value)->format('Y/m/d');
     }
+
+    public function setReceivedAtAttribute($date){
+        $this->attributes['received_at'] = Carbon::createFromFormat('m/d/Y', $date)->format('Y-m-d H:m:s');
+    }
+
     public function getReceivedAtAttribute($value){
         return Carbon::parse($value)->format('Y/m/d');
     }
+
     public function getClosedAtAttribute($value){
         return Carbon::parse($value)->format('Y/m/d');
     }
@@ -95,6 +101,10 @@ class Issue extends Model
     
     public function getFeesDHAttribute(){
         return $this->charges . ' DH';
+    }
+
+    public function clientInfo(){
+        return json_encode($this->client);
     }
 
     public function scopeTotalIssues($query){ // Params: $withDiagnostic = false
