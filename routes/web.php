@@ -1,8 +1,5 @@
 <?php
 
-use App\Issue;
-use Illuminate\Support\Facades\DB;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,9 +17,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', 'HomeController')->name('dashboard');
     Route::get('/get-statistics', 'HomeController@getStatistics')->name('statistics');
     Route::get('/pmodels/{model}', 'HomeController@problemsByModel')->name('pmodels');
-    
-    Route::get('/issue/modify','IssueController@getClientInfo')->name('modify.client');
-    Route::put('/issue/modify/{imei}','IssueController@setClientInfo');
     
     Route::get('/issues/create','IssueController@create')->name('issues.create');
     
