@@ -7,6 +7,7 @@
             <li class="m-menu__item " aria-haspopup="true"><a href="{{ route('issues.create') }}" class="m-menu__link "><span class="m-menu__item-here"></span><i class="m-menu__link-icon fa fa-ticket-alt"></i><span class="m-menu__link-text">Open issue</span></a></li>
             @if(auth()->user()->isAdmin || auth()->user()->isSav)
             <li class="m-menu__item " aria-haspopup="true"><a href="{{ route('issues.index') }}" class="m-menu__link "><span class="m-menu__item-here"></span><i class="m-menu__link-icon fa fa-list-alt"></i><span class="m-menu__link-text">Liste issues</span></a></li>
+            <li class="m-menu__item " aria-haspopup="true"><a href="{{ route('modify.client') }}" class="m-menu__link "><span class="m-menu__item-here"></span><i class="m-menu__link-icon fa fa-user-edit"></i><span class="m-menu__link-text">Update Client</span></a></li>
             <li class="m-menu__item " aria-haspopup="true"><a href="{{ route('problems.index') }}" class="m-menu__link "><span class="m-menu__item-here"></span><i class="m-menu__link-icon fa fa-exclamation"></i><span class="m-menu__link-text">Problems</span></a></li>
             <li class="m-menu__item " aria-haspopup="true"><a href="{{ route('solutions.index') }}" class="m-menu__link "><span class="m-menu__item-here"></span><i class="m-menu__link-icon fa fa-check-double"></i><span class="m-menu__link-text">Solutions</span></a></li>
             @endif

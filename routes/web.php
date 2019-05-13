@@ -1,5 +1,8 @@
 <?php
 
+use App\Issue;
+use Illuminate\Support\Facades\DB;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,6 +21,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get-statistics', 'HomeController@getStatistics')->name('statistics');
     Route::get('/pmodels/{model}', 'HomeController@problemsByModel')->name('pmodels');
     
+    Route::get('/issue/modify','IssueController@getClientInfo')->name('modify.client');
+    Route::put('/issue/modify/client/{imei}','IssueController@setClientInfo');
+    
     Route::get('/issues/create','IssueController@create')->name('issues.create');
     
     Route::group(['middleware' => ['admin']], function () {
@@ -26,6 +32,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('/users', 'UserController');
         Route::put('/users/password/{id}', 'UserController@updatePassword')->name('users.changePassword');
         Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+        Route::post('/issues/back-stage-2/{issue}','IssueController@backStage2')->name('issues.backstage2');
     });
 
     Route::group(['middleware' => ['sav']], function () {

@@ -196,6 +196,9 @@ function getIssues() {
                 }
                 if(issue.user_super){
                     rows += `<a href="#" class="btn btn-danger btn-sm btn-del" data-id="${issue.id}" title="Delete"><i class="fas fa-times"></i></a>`;
+                    if(issue.stage == 3){
+                        rows += `<button class="btn btn-info btn-sm correct-issue" data-id="${issue.id}" title="Correct issue Details"><i class="fas fa-undo"></i></button>`;
+                    }
                 }      
                 rows +='</div>\
                        </td>\
@@ -363,7 +366,34 @@ $(document).ready(function () {
 
     });
 
-
+    // Correct Issue details by setting the stage to level 2
+    $('body').on('click','.correct-issue',function(e){
+        let ID = $(this).data('id');
+        e.preventDefault();
+        e.stopPropagation();
+        swal({
+            title: "",
+            text: "Do you want to step back ?",
+            icon: "warning",
+            buttons: ["Cancel", true],
+            dangerMode: true,
+        })
+        .then((confirmation) => {
+            if (confirmation) {
+                $.ajax({
+                    type: 'POST',
+                    url: `/issues/back-stage-2/${ID}`,
+                    success: function(response){
+                        getIssues();
+                    },
+                    error: function(error){
+                        raiseError(error);
+                    }
+                })
+            }
+        });
+        return false;
+    })
     /**
      * 
      * Delete an Issue

@@ -11,6 +11,10 @@ $(document).ready(function () {
                 status: status
             },
             success: function (response) {
+                if(response.length <= 0){
+                    alert('No Images uploaded');
+                    return;
+                }
                 var images = '';
                 $.each(response, function (key, image) {
                     images += `<a href="${image.file_name}"><img src="${image.file_name}" alt="..." style="height:150px; width:150px;"  class="img-thumbnail img-fluid"></a>` + "\n";
@@ -19,7 +23,7 @@ $(document).ready(function () {
                 $('#images-modal').modal('toggle');
             },
             error: function (response) {
-                // console.log(response);
+                alert('an error occured, please contact the IT');
             }
         });
 

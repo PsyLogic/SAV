@@ -88,6 +88,9 @@
                                     @endif
                                     @if(auth()->user()->isAdmin)
                                     <a href="#" class="btn btn-danger btn-sm btn-del" data-id="{{$issue->id}}" title="Delete"><i class="fas fa-times"></i></a>
+                                        @if ($issue->stage == 3)
+                                        <button class="btn btn-info btn-sm correct-issue" data-id="{{$issue->id}}" title="Correct issue Details"><i class="fas fa-undo"></i></button>
+                                        @endif
                                     @endif
                                 </div>
                             </td>
@@ -117,7 +120,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
 <script src="{{ asset('js/app/issues.js') }}"></script>
 @stop

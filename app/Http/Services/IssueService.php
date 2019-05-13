@@ -2,20 +2,17 @@
 
 namespace App\Http\Services;
 
-use App\Http\Requests\Issue\FinalUpdateIssueRequest;
-use App\Http\Requests\Issue\StoreIssueRequest;
-use App\Http\Requests\Issue\UpdateIssueRequest;
-use App\Http\Resources\IssueResource;
-use App\Image;
-use App\Issue;
-use App\Problem;
-use App\Solution;
 use Auth;
-use Carbon\Carbon;
+use App\Http\Requests\Issue\{StoreIssueRequest,UpdateIssueRequest,FinalUpdateIssueRequest};
+use App\Http\Requests\Issue\{FetchClientRequest,UpdateClientRequest};
+use App\{Image,Issue,Problem,Solution};
+use App\Http\Resources\IssueResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\{File,Input,DB};
+use Illuminate\Database\QueryException;
 use Intervention\Image\Facades\Image as ImageHandler;
+use GuzzleHttp\Client;
+use Carbon\Carbon;
 
 class IssueService
 {
@@ -27,10 +24,7 @@ class IssueService
 
     public function getList(Request $request)
     {
-        if ($request->ajax()) {
-            return IssueResource::collection(Issue::all());
-        }
-        return abort(403);
+        return $request->ajax() ? IssueResource::collection(Issue::all()) : abort(403);
     }
 
     public function add(StoreIssueRequest $requestData)
@@ -38,14 +32,10 @@ class IssueService
 
         if ($requestData->ajax()) {
 
-            $requestData->validated();
-
             // Check IMEI if exists before sumbit anything
             $client = $this->getClientInformation($requestData->imei);
 
-            if (isset($client['error']) && $client['error'] === true) {
-                return response()->json($client, 404);
-            }
+            if (isset($client['error']) && $client['error'] === true) return response()->json($client, 404);
 
             Issue::create([
                 'imei' => $requestData->imei,
@@ -53,7 +43,6 @@ class IssueService
                 'client' => $client,
                 'received_at' => $requestData->received_at,
             ]);
-
             return response()->json('done');
         }
         abort(403);
@@ -63,31 +52,25 @@ class IssueService
     {
 
         if ($requestData->ajax()) {
-            // Validate Request data
-            $requestData->validated();
 
             $imei = $requestData->imei;
 
             // Check IMEI if exists before sumbit anything
             $client = $this->getClientInformation($imei);
-            if (isset($client['error']) && $client['error'] === true) {
-                return response()->json($client, 404);
-            }
 
-            if ($requestData->hasFile('images')) {
+            if (isset($client['error']) && $client['error'] === true) return response()->json($client, 404);
+
+            if ($requestData->hasFile('images'))
                 $this->uploadPhoneImage($issue->id, Input::file('images'));
-            } else {
+            else 
                 $errors = "No File is Uploaded";
-            }
 
-            if (!empty($errors)) {
-                return response()->json(['message' => $errors], 412);
-            }
+            if (!empty($errors)) return response()->json(['message' => $errors], 412);
 
             // update issue information
             $issue->imei = $imei;
             $issue->user_id = Auth::user()->id; // Assign this issue to Authenticated Agent
-            $issue->received_at = Carbon::now(); // The date of receiving the package and time of verifying it.
+            $issue->delivered_at = Carbon::now(); // The date of receiving the package and time of verifying it.
             $issue->stage = 2; // Going to stage 2 of the issue (in process)
             $issue->client = $client; // Update Client information
             $issue->saveOrFail();
@@ -101,39 +84,29 @@ class IssueService
     {
         if ($requestData->ajax()) {
 
-            $requestData->validated();
-
             $diagnostic = $requestData->diagnostic;
             $imei = $requestData->imei_stage_3;
             $images = Input::file('images');
             $errors = "";
 
-            if ($imei === '999999999999999') {
-                $errors = "You must Fill the IMEI field with the real one";
-                return response()->json(['message' => $errors], 412);
-            }
+            if ($imei === '999999999999999') 
+                return response()->json(['message' => "You must Fill the IMEI field with the real one"], 412);
 
              // Check IMEI if exists before sumbit anything
              $client = $this->getClientInformation($imei);
-             if (isset($client['error']) && $client['error'] === true) {
-                 return response()->json($client, 404);
-             }
+             if (isset($client['error']) && $client['error'] === true) return response()->json($client, 404);
 
             if ($diagnostic == 'software') {
 
-                if ($requestData->hasFile('images')) {
-                    $this->uploadPhoneImage($issue->id, $images, 'after');
-                }
+                if ($requestData->hasFile('images')) $this->uploadPhoneImage($issue->id, $images, 'after');
+                
             } else {
                 $requestData->hasFile('images') ? $this->uploadPhoneImage($issue->id, $images, 'after') : $errors = "No File is Uploaded";
 
-                if (!empty($errors)) {
-                    return response()->json(['message' => $errors], 412);
-                }
-
-                $issue->charges = $requestData->charges; // Fees of repair.
+                if (!empty($errors)) return response()->json(['message' => $errors], 412);
 
                 // Check if problem is selected or an other problem is defined
+                $issue->problems()->detach();
                 if (!empty($requestData->extra_problem)) {
                     $problem = Problem::create([
                         'content' => $requestData->extra_problem,
@@ -147,15 +120,18 @@ class IssueService
                 $problems = Problem::find($requestData->problems);
                 $issue->problems()->attach($problems);
 
+                $issue->charges = $requestData->charges; // Fees of repair.
             }
             // update issue information
             $issue->imei = $imei; // The diagnostic if issue ( software).
             $issue->diagnostic = $diagnostic; // The diagnostic if issue ( software).
             $issue->closed_at = Carbon::now(); // The date of closing the issue.
             $issue->stage = 3; // Going to stage 3 of the issue (closed)
+            $issue->client = $client; // update client info
             $issue->saveOrFail();
 
             // Check if solution is selected or an other solution is defined
+            $issue->solutions()->detach();
             if (!empty($requestData->extra_solution)) {
                 $solution = Solution::create([
                     'content' => $requestData->extra_solution,
@@ -192,26 +168,43 @@ class IssueService
         abort(403);
     }
 
+    public function getClientBy(FetchClientRequest $request){
+        if($request->ajax()){
+            $imei = $request->imei;
+            if($imei == '999999999999999')
+                return response()->json('Please enter a valid IMEI',422);
+            return Issue::select('client')->where('imei',$imei)->first()->client ?? response()->json('IMEI not found',404);
+        }
+        return view('issue.modify',['solutions' => Solution::all()]);
+    }
+    
+    public function updateClientInfo(UpdateClientRequest $request, $imei){
+        try {
+            return DB::table('issues')
+            ->where('imei', $imei)
+            ->update([
+                'client->full_name' => $request->full_name,
+                'client->tel' => $request->phone,
+                'client->city' => $request->city,
+            ]);
+        }catch (QueryException $e) {
+            return response()->json($e->getMessage(),500);
+        } catch (\PDOException $e) {
+            return response()->json($e->getMessage(),500);
+        } 
+    }
+
     private function getClientInformation($imei)
     {
-        if (!empty($imei) && strlen($imei) == 15) {
-            $result = $this->verifyIMEI($imei);
-            if ($result['code'] == 404) {
-                return ['message' => $result['content'], 'error' => true];
-            }
-
-            return $result['content'];
-        }
+        $result = $this->verifyIMEI($imei);
+        return ($result['code'] !== 404) ? $result['content'] : ['message' => $result['content'], 'error' => true];
     }
 
     private function checkDirectory($path)
     {
         $pathInfo = pathinfo($path);
-        if (!FILE::exists($pathInfo['dirname'])) {
-            File::makeDirectory($pathInfo['dirname'], 0755, true);
-        }
+        if (!FILE::exists($pathInfo['dirname'])) File::makeDirectory($pathInfo['dirname'], 0755, true);
     }
-
 
     // TODO: this function needs to processed in the queue
     private function uploadPhoneImage($issue_id, $images, $status = 'before')
@@ -220,7 +213,7 @@ class IssueService
         $folder = $today->format('Y-m-d') . '/' . $issue_id . '/';
         $path = public_path('storage') . '/' . $folder;
         $errors = [];
-
+        Image::where('issue_id',$issue_id)->whereStatus('after')->delete();
         foreach ($images as $image) {
             $fileName = time() . '.' . $image->getClientOriginalExtension();
             $fullPath = $path . $fileName;
@@ -250,7 +243,7 @@ class IssueService
     private function verifyIMEI($imei)
     {
         $endpoint = "http://154.70.200.106:8003/api/getinfo";
-        $client = new \GuzzleHttp\Client();
+        $client = new Client;
         $options = ['query' => ['imei' => $imei]];
 
         $response = $client->request('GET', $endpoint, $options);

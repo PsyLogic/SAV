@@ -9,6 +9,8 @@ use App\Http\Services\IssueService;
 use App\Http\Requests\Issue\StoreIssueRequest;
 use App\Http\Requests\Issue\UpdateIssueRequest;
 use App\Http\Requests\Issue\FinalUpdateIssueRequest;
+use App\Http\Requests\Issue\FetchClientRequest;
+use App\Http\Requests\Issue\UpdateClientRequest;
 
 class IssueController extends Controller
 {
@@ -106,10 +108,7 @@ class IssueController extends Controller
      */
     public function destroy(Request $request, Issue $issue)
     {
-        if($request->ajax()){
-            return response()->json($issue->delete());
-        }
-        abort(403);
+        return $request->ajax() ? response()->json($issue->delete()) : abort(403);;
     }
 
     /**
@@ -132,4 +131,18 @@ class IssueController extends Controller
     public function report(Issue $issue){
         return view('issue.report', compact('issue'));
     }
+
+    public function getClientInfo(FetchClientRequest $request){
+        return $this->issue_service->getClientBy($request);
+    }
+
+    public function setClientInfo(UpdateClientRequest $request, $imei){
+        return $this->issue_service->updateClientInfo($request, $imei);
+    }
+
+    public function backStage2(Issue $issue){
+        $issue->stage = 2;
+        return response()->json($issue->save());
+    }
+
 }

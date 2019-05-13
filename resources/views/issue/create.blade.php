@@ -7,6 +7,7 @@
 @endsection
 @section('css')
 <link href="{{ asset('v2/vendors/bootstrap-select/dist/css/bootstrap-select.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('v2/vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
 <div class="row justify-content-center">
@@ -44,7 +45,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="received_at" >Received date:</label>
-                                <input type="date" class="form-control" id="received_at" name="received_at" placeholder="Select date" required> 
+                                <input type="text" class="form-control m_datepicker_1" id="received_at" name="received_at" readonly placeholder="Select date" required> 
                             </div>
     
                         </div>
@@ -62,6 +63,7 @@
 
 @section('js')
 <script src="{{ asset('v2/vendors/bootstrap-select/dist/js/bootstrap-select.js') }}" type="text/javascript"></script>
+<script src="{{ asset('v2/vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
 <script>
     function ableLoading(element,html='<i class="fas fa-spinner fa-spin"></i>'){
         element.html(html);
@@ -82,6 +84,28 @@
 
         // init bootstrap select
         $('.m_selectpicker').selectpicker();
+
+        var arrows;
+        if (mUtil.isRTL()) {
+            arrows = {
+                leftArrow: '<i class="la la-angle-right"></i>',
+                rightArrow: '<i class="la la-angle-left"></i>'
+            }
+        } else {
+            arrows = {
+                leftArrow: '<i class="la la-angle-left"></i>',
+                rightArrow: '<i class="la la-angle-right"></i>'
+            }
+        }
+
+        // minimum setup
+        $('.m_datepicker_1, .m_datepicker_1_validate').datepicker({
+            rtl: mUtil.isRTL(),
+            todayHighlight: true,
+            orientation: "bottom left",
+            templates: arrows
+        });
+
 
         // Insert new Issue
         $('#add-frm-issue').submit(function(e){
